@@ -5,6 +5,7 @@
     "bboard-contract",
     "bboard-api",
     "bboard-ui",
+    "bboard-ui-pages",
     "token-contract"
   ],
   "scripts": {

@@ -1,5 +1,5 @@
-export * from './template-providers';
+// export * from './bboard-providers';
 export * from './bboard-localStorage';
 export * from './bboard-localStorage-class';
-export * from './template-deployment';
-export * from './template-deployment-class';
+export * from './bboard-deployment';
+export * from './bboard-deployment-class';

@@ -4,7 +4,7 @@ import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
 
 const Page = () => {
   const { address, coinPublicKey, encryptionPublicKey, walletName, uris, hasConnectedWallet, isProofServerOnline } = useAssets();
-  const { setOpen, disconnect } = useWallet();
+  const { setOpen, disconnect } = useWallet(); 
   console.log({ uris });
 
   return (
