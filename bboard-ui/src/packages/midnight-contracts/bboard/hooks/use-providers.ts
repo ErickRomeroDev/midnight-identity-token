@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import { TemplateProvidersContext, TemplateProvidersState } from '../contexts';
+import { ProvidersContext, ProvidersState } from '../contexts';
 
-export const useTemplateProviders = (): TemplateProvidersState | null => {
-  const templateProviderState = useContext(TemplateProvidersContext);
-  if (!templateProviderState) {
-    console.warn('[useTemplateProviders] Providers not ready yet.');
+export const useProviders = (): ProvidersState | null => {
+  const providerState = useContext(ProvidersContext);
+  if (!providerState) {
+    console.warn('[useProviders] not ready yet.');
     return null;
   }
-  return templateProviderState;
+  return providerState;
 };

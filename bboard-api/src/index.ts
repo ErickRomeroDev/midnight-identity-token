@@ -86,7 +86,7 @@ export class API implements DeployedAPI {
     ).pipe(
       scan(combine, emptyState),
       retry({
-        // sometimes websocket fails which is why we retry
+        // sometimes websocket fails 
         delay: 500,
       }),
     );
@@ -218,9 +218,10 @@ export class API implements DeployedAPI {
   ): Promise<API> {
     logger.info({
       deployContract: {
-        contractPrivateId,
+        contractPrivateId,        
       },
     });
+    console.log("dentro da class para ver Providers:", providers);
     const deployedTemplateContract = await deployContract(providers, {
       privateStateKey: contractPrivateId,
       contract: contractInstance,

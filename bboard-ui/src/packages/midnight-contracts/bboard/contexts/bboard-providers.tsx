@@ -5,7 +5,7 @@ import type {
   UnbalancedTransaction,
   WalletProvider,
 } from '@midnight-ntwrk/midnight-js-types';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useMemo, useState } from 'react';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { levelPrivateStateProvider } from '@midnight-ntwrk/midnight-js-level-private-state-provider';
 import {
@@ -30,60 +30,53 @@ import { getLedgerNetworkId, getZswapNetworkId } from '@midnight-ntwrk/midnight-
 import { Transaction } from '@midnight-ntwrk/ledger';
 import { ProviderCallbackAction } from '@/packages/midnight-core';
 import { useAssets, useWallet } from '@/packages/midnight-react';
-import { httpClientProofProvider } from '@midnight-ntwrk/midnight-js-http-client-proof-provider';
-import WebSocket from 'isomorphic-ws';
-import { DAppConnectorWalletAPI, ServiceUriConfig } from '@midnight-ntwrk/dapp-connector-api';
-import { pipe } from 'fp-ts/function';
 
-export interface TemplateProvidersState {
+export interface ProvidersState {
   privateStateProvider: PrivateStateProvider<PrivateStates>;
-  zkConfigProvider: ZKConfigProvider<CircuitKeys>;
+  zkConfigProvider?: ZKConfigProvider<CircuitKeys>;
   proofProvider: ProofProvider<CircuitKeys>;
   publicDataProvider?: PublicDataProvider;
   walletProvider?: WalletProvider;
   midnightProvider?: MidnightProvider;
   providers?: Providers;
-  snackBarText?: string;
+  flowMessage?: string;
 }
 
-interface TemplateAppProviderProps {
+interface ProviderProps {
   children: React.ReactNode;
   logger: Logger;
 }
 
-export const TemplateProvidersContext = createContext<TemplateProvidersState | undefined>(undefined);
+export const ProvidersContext = createContext<ProvidersState | undefined>(undefined);
 
-export const TemplateProvider = ({ children, logger }: TemplateAppProviderProps) => {
-  const [providers, setProviders] = useState<TemplateProvidersState | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
-  const [snackBarText, setSnackBarText] = useState<string | undefined>(undefined);
+export const Provider = ({ children, logger }: ProviderProps) => {
+  const [flowMessage, setFlowMessage] = useState<string | undefined>(undefined);
 
   const { uris, coinPublicKey } = useAssets();
   const { midnightBrowserWalletInstance } = useWallet();
 
-  const providerCallback: (action: ProviderCallbackAction) => void = (action: ProviderCallbackAction): void => {
-    if (action === 'proveTxStarted') {
-      setSnackBarText('Proving transaction...');
-    } else if (action === 'proveTxDone') {
-      setSnackBarText(undefined);
-    } else if (action === 'balanceTxStarted') {
-      setSnackBarText('Signing the transaction with Midnight Lace wallet...');
-    } else if (action === 'downloadProverDone') {
-      setSnackBarText(undefined);
-    } else if (action === 'downloadProverStarted') {
-      setSnackBarText('Downloading prover key...');
-    } else if (action === 'balanceTxDone') {
-      setSnackBarText(undefined);
-    } else if (action === 'submitTxStarted') {
-      setSnackBarText('Submitting transaction...');
-    } else if (action === 'submitTxDone') {
-      setSnackBarText(undefined);
-    } else if (action === 'watchForTxDataStarted') {
-      setSnackBarText('Waiting for transaction finalization on blockchain...');
-    } else if (action === 'watchForTxDataDone') {
-      setSnackBarText(undefined);
-    }
-  };
+  const actionMessages = useMemo<Record<ProviderCallbackAction, string | undefined>>(
+    () => ({
+      proveTxStarted: 'Proving transaction...',
+      proveTxDone: undefined,
+      balanceTxStarted: 'Signing the transaction with Midnight Lace wallet...',
+      balanceTxDone: undefined,
+      downloadProverStarted: 'Downloading prover key...',
+      downloadProverDone: undefined,
+      submitTxStarted: 'Submitting transaction...',
+      submitTxDone: undefined,
+      watchForTxDataStarted: 'Waiting for transaction finalization on blockchain...',
+      watchForTxDataDone: undefined,
+    }),
+    [],
+  );
+
+  const providerCallback = useCallback(
+    (action: ProviderCallbackAction): void => {
+      setFlowMessage(actionMessages[action]);
+    },
+    [actionMessages],
+  );
 
   const privateStateProvider: PrivateStateProvider<PrivateStates> = useMemo(
     () =>
@@ -96,9 +89,18 @@ export const TemplateProvider = ({ children, logger }: TemplateAppProviderProps)
     [logger],
   );
 
+  const publicDataProvider: PublicDataProvider | undefined = useMemo(
+    () =>
+      uris
+        ? new WrappedPublicDataProvider(indexerPublicDataProvider(uris.indexerUri, uris.indexerWsUri), providerCallback, logger)
+        : undefined,
+    [uris, providerCallback, logger],
+  );
+
   const zkConfigProvider = useMemo(() => {
-    if (typeof window === "undefined") {
-      return undefined; // ✅ Avoid using `window` during SSR
+    if (typeof window === 'undefined') {
+      // Return undefined (or an appropriate fallback) if running on the server.
+      return undefined;
     }
     return new CachedFetchZkConfigProvider<CircuitKeys>(
       `${window.location.origin}/midnight/bboard`,
@@ -107,23 +109,75 @@ export const TemplateProvider = ({ children, logger }: TemplateAppProviderProps)
     );
   }, []);
 
-const publicDataProvider = useMemo(() => {
-  if (typeof window === "undefined" || !uris?.indexerUri || !uris?.indexerWsUri) {
-    return undefined; // ✅ Prevent execution during SSR
-  }
-  
-  // return new WrappedPublicDataProvider(
-  //   indexerPublicDataProvider(uris.indexerUri, uris.indexerWsUri),
-  //   providerCallback,
-  //   logger,
-  // );
-}, [uris, logger, providerCallback]);
-
-
-  return (
-    <TemplateProvidersContext.Provider value={providers}>
-      {isLoading ? <div>Loading Providers...</div> : children}
-    </TemplateProvidersContext.Provider>
+  const proofProvider = useMemo(
+    () => (uris ? proofClient(uris.proverServerUri, providerCallback) : noopProofClient()),
+    [uris, providerCallback],
   );
-};
 
+  const walletProvider: WalletProvider = useMemo(
+    () =>
+      midnightBrowserWalletInstance
+        ? {
+            coinPublicKey: coinPublicKey!,
+            balanceTx: (tx: UnbalancedTransaction, newCoins: CoinInfo[]): Promise<BalancedTransaction> => {
+              providerCallback('balanceTxStarted');
+              return midnightBrowserWalletInstance
+                ._walletInstance!.balanceAndProveTransaction(
+                  ZswapTransaction.deserialize(tx.serialize(getLedgerNetworkId()), getZswapNetworkId()),
+                  newCoins,
+                )
+                .then((zswapTx) => Transaction.deserialize(zswapTx.serialize(getZswapNetworkId()), getLedgerNetworkId()))
+                .then(createBalancedTx)
+                .finally(() => providerCallback('balanceTxDone'));
+            },
+          }
+        : {
+            coinPublicKey: '',
+            balanceTx: () => Promise.reject(new Error('readonly')),
+          },
+    [midnightBrowserWalletInstance, coinPublicKey, providerCallback],
+  );
+
+  const midnightProvider: MidnightProvider = useMemo(
+    () =>
+      midnightBrowserWalletInstance
+        ? {
+            submitTx: (tx: BalancedTransaction): Promise<TransactionId> => {
+              providerCallback('submitTxStarted');
+              return midnightBrowserWalletInstance
+                ._walletInstance!.submitTransaction(tx)
+                .finally(() => providerCallback('submitTxDone'));
+            },
+          }
+        : {
+            submitTx: (): Promise<TransactionId> => Promise.reject(new Error('readonly')),
+          },
+    [midnightBrowserWalletInstance, providerCallback],
+  );
+
+  const combinedProviders: ProvidersState = useMemo(() => {
+    return {
+      privateStateProvider,
+      publicDataProvider,
+      proofProvider,
+      zkConfigProvider,
+      walletProvider,
+      midnightProvider,
+      // Only set the nested providers object if publicDataProvider (and others, if needed) are defined.
+      providers:
+        publicDataProvider && zkConfigProvider
+          ? {
+              privateStateProvider,
+              publicDataProvider,
+              zkConfigProvider,
+              proofProvider,
+              walletProvider,
+              midnightProvider,
+            }
+          : undefined,
+      flowMessage,
+    };
+  }, [privateStateProvider, publicDataProvider, proofProvider, zkConfigProvider, walletProvider, midnightProvider, flowMessage]);
+
+  return <ProvidersContext.Provider value={combinedProviders}>{children}</ProvidersContext.Provider>;
+};

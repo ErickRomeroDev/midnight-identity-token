@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import { DeployedTemplateProviderContext, type DeployedTemplateAPIProvider } from '../contexts';
+import { DeployedProviderContext, type DeployedAPIProvider } from '../contexts';
 
-export const useDeployedGameContext = (): DeployedTemplateAPIProvider => {
-  const context = useContext(DeployedTemplateProviderContext);
+export const useDeployedContracts = (): DeployedAPIProvider => {
+  const context = useContext(DeployedProviderContext);
 
   if (!context) {
-    throw new Error('A <DeployedGameProvider /> is required.');
+    throw new Error('A wallet and Provider context is required.');
   }
 
   return context;

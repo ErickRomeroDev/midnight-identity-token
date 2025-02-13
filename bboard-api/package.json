@@ -9,7 +9,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "prepare-local-env": "RUN_STANDALONE='true' NODE_OPTIONS=--experimental-vm-modules jest prepare-local-standalone-env.test --detectOpenHandles --forceExit",
+    "prepare-local-env": "RUN_STANDALONE='true' NODE_OPTIONS=--experimental-vm-modules jest prepare-local-standalone-env.test --detectOpenHandles",
     "test": "yarn test-api",
     "test-api": "DEBUG='testcontainers' RUN_STANDALONE='true' NODE_OPTIONS=--experimental-vm-modules jest api.test --detectOpenHandles --forceExit",
     "build": "rm -rf dist && tsc --project tsconfig.build.json",

@@ -79,7 +79,7 @@ export class TestEnvironment {
       this.logger.info(`Using compose file: ${composeFile}`);
       this.dockerEnv = new DockerComposeEnvironment(path.resolve(currentDir, '..', '..'), composeFile)
         .withWaitStrategy(
-          'bboard-api-proof-server',
+          'api-proof-server',
           Wait.forLogMessage('Actix runtime found; starting in Actix runtime', 1),
         )
         .withWaitStrategy('api-indexer', Wait.forLogMessage(/Transactions subscription started/, 1))

@@ -2,23 +2,25 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext } from 'react';
 import { type Logger } from 'pino';
 
-import type { DeployedTemplateAPIProvider } from './bboard-deployment-class';
-import { useTemplateLocalState } from '../hooks/use-localStorage';
+import type { DeployedAPIProvider } from './bboard-deployment-class';
+import { useLocalState } from '../hooks/use-localStorage';
 import { DeployedTemplateManager } from './bboard-deployment-class';
+import { useProviders } from '../hooks';
+import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 
-const TOKEN_ADDRESS = '4554545455454544545';
-
-export const DeployedTemplateProviderContext = createContext<DeployedTemplateAPIProvider | undefined>(undefined);
+export const DeployedProviderContext = createContext<DeployedAPIProvider | undefined>(undefined);
 
 export type DeployedGameProviderProps = PropsWithChildren<{
   logger: Logger;
+  TOKEN_ADDRESS: ContractAddress;
 }>;
 
-export const DeployedTemplateProvider = ({ logger, children }: DeployedGameProviderProps) => {
-  const localState = useTemplateLocalState();
+export const DeployedProvider = ({ logger, TOKEN_ADDRESS, children }: DeployedGameProviderProps) => {
+  const localState = useLocalState();
+  const providers = useProviders();
   return (
-    <DeployedTemplateProviderContext.Provider value={new DeployedTemplateManager(logger, localState, TOKEN_ADDRESS)}>
+    <DeployedProviderContext.Provider value={new DeployedTemplateManager(logger, localState, TOKEN_ADDRESS, providers?.providers)}>
       {children}
-    </DeployedTemplateProviderContext.Provider>
+    </DeployedProviderContext.Provider>
   );
 };

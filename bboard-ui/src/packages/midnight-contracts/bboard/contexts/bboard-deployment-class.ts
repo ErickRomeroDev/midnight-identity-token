@@ -31,19 +31,20 @@ export interface FailedContractDeployment {
 
 export type ContractDeployment = InProgressContractDeployment | DeployedContract | FailedContractDeployment;
 
-export interface DeployedTemplateAPIProvider {
+export interface DeployedAPIProvider {
   readonly contractDeployments$: Observable<ContractState[]>;
-  readonly addContract: (providers: Providers, contractType: ContractType, contractAddress: ContractAddress) => ContractState;
-  readonly deployAndAddContract: (providers: Providers, contractType: ContractType) => Promise<ContractState>;
+  readonly addContract: (contractType: ContractType, contractAddress: ContractAddress) => ContractState;
+  readonly deployAndAddContract: (contractType: ContractType) => Promise<ContractState>;
 }
 
-export class DeployedTemplateManager implements DeployedTemplateAPIProvider {
+export class DeployedTemplateManager implements DeployedAPIProvider {
   readonly #contractDeploymentsSubject: BehaviorSubject<ContractState[]>;
 
   constructor(
     private readonly logger: Logger,
     private readonly localState: LocalStorageProps,
     private readonly tokenContractAddress: ContractAddress,
+    private readonly providers?: Providers,
   ) {
     this.#contractDeploymentsSubject = new BehaviorSubject<ContractState[]>([]);
     this.contractDeployments$ = this.#contractDeploymentsSubject;
@@ -51,7 +52,7 @@ export class DeployedTemplateManager implements DeployedTemplateAPIProvider {
 
   readonly contractDeployments$: Observable<ContractState[]>;
 
-  addContract(providers: Providers, contractType: ContractType, contractAddress: ContractAddress): ContractState {
+  addContract(contractType: ContractType, contractAddress: ContractAddress): ContractState {
     const deployments = this.#contractDeploymentsSubject.value;
 
     const deployment = new BehaviorSubject<ContractDeployment>({
@@ -65,12 +66,12 @@ export class DeployedTemplateManager implements DeployedTemplateAPIProvider {
       (deployment) => !(deployment.observable.value.address === contractAddress && deployment.contractType === contractType),
     );
     this.#contractDeploymentsSubject.next([...deploymentsToKeep, contract]);
-    void this.joinGame(providers, deployment, contractAddress);
+    void this.join(deployment, contractAddress);
 
     return contract;
   }
 
-  async deployAndAddContract(providers: Providers, contractType: ContractType): Promise<ContractState> {
+  async deployAndAddContract(contractType: ContractType): Promise<ContractState> {
     const deployments = this.#contractDeploymentsSubject.value;
 
     const deployment = new BehaviorSubject<ContractDeployment>({
@@ -79,25 +80,34 @@ export class DeployedTemplateManager implements DeployedTemplateAPIProvider {
 
     const contract: ContractState = { observable: deployment, contractType };
 
-    this.#contractDeploymentsSubject.next([...deployments, contract]);
-    const address = await this.deployGame(providers, deployment);
+    this.#contractDeploymentsSubject.next([...deployments, contract]);    
+    const address = await this.deploy(deployment);    
 
     return { observable: deployment, contractType, address };
   }
 
-  private async deployGame(providers: Providers, deployment: BehaviorSubject<ContractDeployment>): Promise<string | undefined> {
+  private async deploy(deployment: BehaviorSubject<ContractDeployment>): Promise<string | undefined> {
     try {
-      const uuid: string = crypto.randomUUID();
-      const api = await API.deploy(uuid, this.tokenContractAddress, providers, this.logger);
-      this.localState.setContractPrivateId(uuid, api.deployedContractAddress);
-      this.localState.addContract(api.deployedContractAddress);
+      if (this.providers) {        
+        const uuid: string = crypto.randomUUID();
+        console.log({uuid, Address: this.tokenContractAddress, providers: this.providers, logger: this.logger})
+        const api = await API.deploy(uuid, this.tokenContractAddress, this.providers, this.logger);
+        console.log("api apos o deploy", api)
+        this.localState.setContractPrivateId(uuid, api.deployedContractAddress);
+        this.localState.addContract(api.deployedContractAddress);
 
-      deployment.next({
-        status: 'deployed',
-        api,
-        address: api.deployedContractAddress,
-      });
-      return api.deployedContractAddress;
+        deployment.next({
+          status: 'deployed',
+          api,
+          address: api.deployedContractAddress,
+        });
+        return api.deployedContractAddress;
+      } else {
+        deployment.next({
+          status: 'failed',
+          error: new Error('Providers are not available'),
+        });
+      }
     } catch (error: unknown) {
       this.logger.error(error);
       deployment.next({
@@ -108,26 +118,29 @@ export class DeployedTemplateManager implements DeployedTemplateAPIProvider {
     return undefined;
   }
 
-  private async joinGame(
-    providers: Providers,
-    deployment: BehaviorSubject<ContractDeployment>,
-    contractAddress: ContractAddress,
-  ): Promise<void> {
+  private async join(deployment: BehaviorSubject<ContractDeployment>, contractAddress: ContractAddress): Promise<void> {
     try {
-      let uuid: string = crypto.randomUUID();
-      const item = this.localState.getContractPrivateId(contractAddress);
-      if (item != null) {
-        uuid = item;
-      } else {
-        this.localState.setContractPrivateId(uuid, contractAddress);
-      }
-      const api = await API.subscribe(uuid, this.tokenContractAddress, providers, contractAddress, this.logger);
+      if (this.providers) {
+        let uuid: string = crypto.randomUUID();
+        const item = this.localState.getContractPrivateId(contractAddress);
+        if (item != null) {
+          uuid = item;
+        } else {
+          this.localState.setContractPrivateId(uuid, contractAddress);
+        }
+        const api = await API.subscribe(uuid, this.tokenContractAddress, this.providers, contractAddress, this.logger);
 
-      deployment.next({
-        status: 'deployed',
-        api,
-        address: api.deployedContractAddress,
-      });
+        deployment.next({
+          status: 'deployed',
+          api,
+          address: api.deployedContractAddress,
+        });
+      } else {
+        deployment.next({
+          status: 'failed',
+          error: new Error('Providers are not available'),
+        });
+      }
     } catch (error: unknown) {
       this.logger.error(error);
       deployment.next({
