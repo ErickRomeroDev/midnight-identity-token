@@ -1,14 +1,16 @@
-import { useDeployedContracts } from '@/packages/midnight-contracts';
+import { useDeployedContracts, useProviders } from '@/packages/midnight-contracts';
 import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
 
 const Page = () => {
   const { address, coinPublicKey, encryptionPublicKey, walletName, hasConnectedWallet, isProofServerOnline } = useAssets();
   const { setOpen, disconnect } = useWallet();  
   const deploy = useDeployedContracts(); 
+  const providers = useProviders();
 
   const deployContract = async () => {
     const contractState = await deploy.deployAndAddContract("yours");
     console.log({contractState})
+    
   }
 
   return (
@@ -27,6 +29,7 @@ const Page = () => {
         Disconnect Wallet
       </div>
       <div onClick={deployContract} className='cursor-pointer'>Deploy Contract</div>
+      <div>Message: {providers && providers.flowMessage}</div>
     </div>
   );
 };
