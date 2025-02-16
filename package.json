@@ -4,9 +4,9 @@
     "compact",
     "bboard-contract",
     "bboard-api",
-    "bboard-ui",
-    "bboard-ui-pages",
-    "token-contract"
+    "ui-pages",
+    "token-contract",
+    "token-api"
   ],
   "scripts": {
     "compact": "turbo run compact",

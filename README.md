@@ -92,5 +92,10 @@ git reset HEAD~1   ***clear last commit and leave changes intact and unstaged
 - 16 april - toolings published and documented ready for beta release
 - 24 april - buidler fest in workshop (midnight tooling....)
 
+## Findings
+
+- Situation where phase1 passes but phase2 fails:
+    1. merge_coin can be used alongside a CoinInfo and Write_coin
+    2. sizes of circuits
 
 

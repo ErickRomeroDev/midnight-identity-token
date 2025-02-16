@@ -17,14 +17,14 @@ describe('Game Play', () => {
   test('First check of the contract', () => {
     const simulator = createSimulator();     
 
-    let state = simulator.as('p1').mint(200);
+    let state = simulator.as('p1').mint(100);
     console.log({ 
       reward: state.reward,   
       tvl_token: state.tvlToken, 
       tvl_dust: state.tvlDust,     
     });   
     
-    let state2 = simulator.as('p1').mint(200);
+    let state2 = simulator.as('p1').mint(100);
     console.log({ 
       reward: state2.reward,   
       tvl_token: state2.tvlToken, 
@@ -38,7 +38,7 @@ describe('Game Play', () => {
       tvl_dust: state3.tvlDust,     
     });  
     
-    let state4 = simulator.as('p1').mint(200);
+    let state4 = simulator.as('p1').mint(100);
     console.log({ 
       reward: state4.reward,   
       tvl_token: state4.tvlToken, 
