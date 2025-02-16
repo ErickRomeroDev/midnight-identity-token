@@ -98,4 +98,8 @@ git reset HEAD~1   ***clear last commit and leave changes intact and unstaged
     1. merge_coin can be used alongside a CoinInfo and Write_coin
     2. sizes of circuits
 
+## Procedure to intialize
+    - First enter to token-api and run yarn prepare-local-env
+    - Then update ui-pages at _app with the token contract after running the prepare phase
+    - Initialize the UI with yarn dev
 
