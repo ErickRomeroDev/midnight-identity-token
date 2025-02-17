@@ -31,6 +31,7 @@ const contractInstance: ContractInstance = new Contract(witnesses);
 export interface DeployedAPI {
   readonly deployedContractAddress: ContractAddress;
   readonly state$: Observable<DerivedState>;
+  readonly turns$: Observable<UserAction>;
 
   mint: () => Promise<void>;
   owner_withdraw: () => Promise<void>;

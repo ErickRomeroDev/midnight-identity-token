@@ -76,12 +76,12 @@ test('prepare local env', async () => {
     10000n * 1000000n,
   );
 
-  await owner.mint();
+  // await owner.mint();
 
-  await sendCustomToken(
-    '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88',
-    100n,
-  );
+  // await sendCustomToken(
+  //   '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88',
+  //   100n,
+  // );
 
   await wallet.close();
 });
