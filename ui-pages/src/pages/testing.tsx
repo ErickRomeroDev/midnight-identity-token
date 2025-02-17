@@ -2,24 +2,24 @@ import { useProviders } from '@/packages/midnight-contracts/token';
 import { useSubscriptions } from '@/packages/midnight-contracts/token/hooks/use-subscriptions';
 import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
 
-
 const Page = () => {
   const { address, coinPublicKey, encryptionPublicKey, walletName, hasConnectedWallet, isProofServerOnline } = useAssets();
-  const { setOpen, disconnect } = useWallet();  
+  const { setOpen, disconnect } = useWallet();
+
   const providers = useProviders();
-  const {tokenContractStates, tokenDeployment, deployedAPI, derivedState, turnsState } = useSubscriptions();
+  const { tokenContractStates, tokenDeployment, deployedAPI, derivedState, turnsState } = useSubscriptions();
 
   console.log({ tokenContractStates });
   console.log({ tokenDeployment });
-  console.log({deployedAPI});
-  console.log({derivedState});
-  console.log({turnsState});
+  console.log({ deployedAPI });
+  console.log({ derivedState });
+  console.log({ turnsState });
 
-  const mint = () => {
+  const mint = () => {        
     if (deployedAPI) {
-      deployedAPI.mint()
+      deployedAPI.mint();
     }
-  }
+  };  
 
   return (
     <div className="flex flex-col">

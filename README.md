@@ -69,10 +69,12 @@ Midnight structure:
     2. sizes of circuits
 
 ## Procedure to intialize
+    - yarn
     - yarn build
+    - Update token address at token.api test
     - yarn environment
-    - yarn dev
     - Update Token address at _app.tsx
+    - yarn dev
 
 ## Need to be installed
     - docker --version
