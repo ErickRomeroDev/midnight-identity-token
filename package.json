@@ -11,11 +11,9 @@
   "scripts": {
     "compact": "turbo run compact",
     "build": "turbo run build",
-    "lint": "turbo run lint",
-    "welcome-participant-ui": "turbo run start --filter=welcome-participant-ui",
-    "welcome-organizer-cli": "turbo run start --filter=welcome-organizer-cli",
-    "welcome-organizer-ui": "turbo run start --filter=welcome-organizer-ui",
-    "bboard-ui": "turbo run start --filter=bboard-ui"
+    "lint": "turbo run lint",  
+    "environment": "turbo run prepare-local-env --filter=token-api",
+    "dev": "turbo run dev --filter=ui-pages"  
   },
   "resolutions": {
     "@midnight-ntwrk/compact-runtime/@midnight-ntwrk/onchain-runtime": "^0.2.2",

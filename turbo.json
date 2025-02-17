@@ -48,10 +48,9 @@
       "outputMode": "new-only",
       "dependsOn": ["build", "compact"]
     },
-    "start": {
+    "prepare-local-env": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["build"]
+      "persistent": true      
     },
     "dev": {
       "cache": false,

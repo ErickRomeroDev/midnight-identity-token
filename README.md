@@ -99,7 +99,8 @@ git reset HEAD~1   ***clear last commit and leave changes intact and unstaged
     2. sizes of circuits
 
 ## Procedure to intialize
-    - First enter to token-api and run yarn prepare-local-env
-    - Then update ui-pages at _app with the token contract after running the prepare phase
-    - Initialize the UI with yarn dev
+    - yarn build
+    - yarn environment
+    - yarn dev
+    - Update Token address at _app.tsx
 

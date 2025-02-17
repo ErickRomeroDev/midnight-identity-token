@@ -6,7 +6,7 @@
     "copy-bboard-keys": "mkdir -p ./public/midnight/bboard/keys && mkdir -p ./public/midnight/bboard/zkir && cp -r ../bboard-contract/dist/managed/bboard/keys/* ./public/midnight/bboard/keys && cp -r ../bboard-contract/dist/managed/bboard/zkir/* ./public/midnight/bboard/zkir",
     "copy-token-keys": "mkdir -p ./public/midnight/token/keys && mkdir -p ./public/midnight/token/zkir && cp -r ../token-contract/dist/managed/token/keys/* ./public/midnight/token/keys && cp -r ../token-contract/dist/managed/token/zkir/* ./public/midnight/token/zkir",
     "dev": "yarn copy-bboard-keys && yarn copy-token-keys && next dev",
-    "build": "next build",
+    "build:ui": "next build",
     "start": "next start",
     "lint": "next lint"
   },
