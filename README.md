@@ -104,3 +104,17 @@ git reset HEAD~1   ***clear last commit and leave changes intact and unstaged
     - yarn dev
     - Update Token address at _app.tsx
 
+## Need to be installed
+    - docker --version
+    - node --version
+    - nvm --version
+    - yarn --version 
+    - Lace Wallet
+    - compactc --version
+    - echo $COMPACT_HOME
+
+## Instalation commands
+    - nvm install
+    - corepack enable
+    - export COMPACT_HOME="/home/erick/my-binaries/compactc"
+    - export PATH="$COMPACT_HOME:$PATH"
