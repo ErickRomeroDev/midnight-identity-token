@@ -62,11 +62,12 @@ Midnight structure:
 - 16 april - toolings published and documented ready for beta release
 - 24 april - buidler fest in workshop (midnight tooling....)
 
-## Findings
+## Findings or Improvements
 
 - Situation where phase1 passes but phase2 fails:
     1. merge_coin can be used alongside a CoinInfo and Write_coin
     2. sizes of circuits
+    3. Phase1 only takes in consideration private States, Zswap logic is not considered in the testing framework and only works with one ZwapCoinPk filled with zeros.
 
 ## Procedure to intialize
     - yarn

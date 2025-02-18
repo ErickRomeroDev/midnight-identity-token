@@ -10,12 +10,12 @@ import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 
 export const DeployedProviderContext = createContext<DeployedAPIProvider | undefined>(undefined);
 
-export type DeployedGameProviderProps = PropsWithChildren<{
+export type DeployedProviderProps = PropsWithChildren<{
   logger: Logger;
   TOKEN_ADDRESS: ContractAddress;
 }>;
 
-export const DeployedProvider = ({ logger, TOKEN_ADDRESS, children }: DeployedGameProviderProps) => {
+export const DeployedProvider = ({ logger, TOKEN_ADDRESS, children }: DeployedProviderProps) => {
   const localState = useLocalState();
   const providers = useProviders();
   return (

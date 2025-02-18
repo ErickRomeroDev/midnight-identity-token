@@ -1203,6 +1203,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@meshsdk/auction-contract@workspace:auction-contract":
+  version: 0.0.0-use.local
+  resolution: "@meshsdk/auction-contract@workspace:auction-contract"
+  dependencies:
+    "@midnight-ntwrk/compact": "workspace:*"
+    eslint: "npm:^8.52.0"
+    jest: "npm:^29.7.0"
+    typescript: "npm:^5.2.2"
+  languageName: unknown
+  linkType: soft
+
 "@meshsdk/bboard-api@workspace:*, @meshsdk/bboard-api@workspace:bboard-api":
   version: 0.0.0-use.local
   resolution: "@meshsdk/bboard-api@workspace:bboard-api"
@@ -1232,7 +1243,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshsdk/token-api@workspace:token-api":
+"@meshsdk/token-api@workspace:*, @meshsdk/token-api@workspace:token-api":
   version: 0.0.0-use.local
   resolution: "@meshsdk/token-api@workspace:token-api"
   dependencies:
@@ -11435,6 +11446,7 @@ __metadata:
     "@hookform/resolvers": "npm:^4.0.0"
     "@meshsdk/bboard-api": "workspace:*"
     "@meshsdk/bboard-contract": "workspace:*"
+    "@meshsdk/token-api": "workspace:*"
     "@meshsdk/token-contract": "workspace:*"
     "@radix-ui/react-accordion": "npm:^1.2.3"
     "@radix-ui/react-alert-dialog": "npm:^1.1.6"
