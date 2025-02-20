@@ -1203,7 +1203,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@meshsdk/auction-contract@workspace:auction-contract":
+"@meshsdk/auction-api@workspace:auction-api":
+  version: 0.0.0-use.local
+  resolution: "@meshsdk/auction-api@workspace:auction-api"
+  dependencies:
+    "@meshsdk/auction-contract": "workspace:*"
+    "@meshsdk/token-contract": "workspace:*"
+    "@types/ws": "npm:^8.5.9"
+    allure-commandline: "npm:^2.28.0"
+    allure-jest: "npm:^2.15.1"
+    allure-js-commons: "npm:^2.15.1"
+    eslint: "npm:^8.52.0"
+    jest: "npm:^29.7.0"
+    pino: "npm:^8.16.1"
+    typescript: "npm:^5.2.2"
+    ws: "npm:^8.14.2"
+  languageName: unknown
+  linkType: soft
+
+"@meshsdk/auction-contract@workspace:*, @meshsdk/auction-contract@workspace:auction-contract":
   version: 0.0.0-use.local
   resolution: "@meshsdk/auction-contract@workspace:auction-contract"
   dependencies:

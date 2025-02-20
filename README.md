@@ -67,7 +67,7 @@ Midnight structure:
 - Situation where phase1 passes but phase2 fails:
     1. merge_coin can be used alongside a CoinInfo and Write_coin
     2. sizes of circuits
-    3. Phase1 only takes in consideration private States, Zswap logic is not considered in the testing framework and only works with one ZwapCoinPk filled with zeros.
+    3. Phase1 only takes in consideration private States, and logic from coins received from circuits. The testing framework does not consider ZswapCoinPks for users since they are filled with zeros for all cases, and Zswap coin balances.
 
 ## Procedure to intialize
     - yarn

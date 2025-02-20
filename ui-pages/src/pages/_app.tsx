@@ -10,7 +10,7 @@ import '@/styles/globals.css';
 // const networkId = 'TestNet' as NetworkId;
 const networkId = 'Undeployed' as NetworkId;
 setNetworkId(networkId);
-const TOKEN_ADDRESS = "02002ac4f00ee535ebd851d2eb3b4a1e038a0aa3353ff93e6e61da276327ff0333a9" as ContractAddress;
+const TOKEN_ADDRESS = "0200cad7d076b1104dba3aa0f8c8869e288f23bb5435b1149a0594674b9b19075980" as ContractAddress;
 
 export const logger = pino.pino({
   level: 'trace',

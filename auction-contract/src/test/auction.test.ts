@@ -69,7 +69,13 @@ describe('Game Play', () => {
     simulator.as('p2').make_bid(102);
     simulator.as('p1').make_bid(200);
 
-    simulator.as('p1').close_bid();    
-       
+    const final = simulator.as('p1').close_bid();  
+    
+    console.log("deadline",final.deadline);
+    console.log("winner",final.highestBidder);
+    console.log("state",final.state);
+    console.log("treasury COIN",final.treasury);
+    console.log("winner bid",final.highestBid);  
+    console.log("treasury balance", final.treasuryBalance) 
   });
 });

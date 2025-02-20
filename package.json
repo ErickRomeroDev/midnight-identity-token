@@ -7,7 +7,8 @@
     "ui-pages",
     "token-contract",
     "token-api",
-    "auction-contract"
+    "auction-contract",
+    "auction-api"
   ],
   "scripts": {
     "compact": "turbo run compact",

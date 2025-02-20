@@ -61,18 +61,31 @@ export const useSubscriptions = () => {
     if (tokenDeployment.status === 'failed') {
       return;
     }
-    setDeployedAPI(tokenDeployment.api);
-    const subscriptionDerivedState = tokenDeployment.api.state$
-      .pipe(auditTime(1000), distinctUntilChanged())
-      .subscribe(setDerivedState);
-    const subscriptionTurnsState = tokenDeployment.api.turns$
-      .pipe(auditTime(1000), distinctUntilChanged())
+    setDeployedAPI(tokenDeployment.api);    
+    const subscriptionTurnsState = tokenDeployment.api.turns$      
       .subscribe(setTurnsState);
-    return () => {
-      subscriptionDerivedState.unsubscribe();
+    return () => {      
       subscriptionTurnsState.unsubscribe();
     };
   }, [tokenDeployment, setDeployedAPI]);
+
+  useEffect(() => {
+    if (!tokenDeployment) {
+      return;
+    }
+    if (tokenDeployment.status === 'in-progress') {
+      return;
+    }
+
+    if (tokenDeployment.status === 'failed') {
+      return;
+    }    
+    const subscriptionDerivedState = tokenDeployment.api.state$      
+      .subscribe(setDerivedState);    
+    return () => {
+      subscriptionDerivedState.unsubscribe();      
+    };
+  }, [tokenDeployment]);
 
   return {
     tokenContractStates,
