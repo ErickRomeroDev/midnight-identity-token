@@ -17,7 +17,9 @@ import {
   pureCircuits,
   witnesses,
   type CoinInfo,
-} from '@meshsdk/token-contract';
+  Maybe,
+  Certificate,
+} from '@meshsdk/auction-contract';
 import * as utils from './utils/index.js';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { BehaviorSubject, combineLatest, concat, defer, from, map, type Observable, of, retry, scan, Subject } from 'rxjs';
@@ -25,6 +27,7 @@ import { toHex } from '@midnight-ntwrk/midnight-js-utils';
 import type { PrivateStateProvider } from '@midnight-ntwrk/midnight-js-types/dist/private-state-provider';
 import { encodeTokenType } from '@midnight-ntwrk/onchain-runtime';
 import { encodeContractAddress, nativeToken } from '@midnight-ntwrk/ledger';
+import { error } from 'console';
 
 const contractInstance: ContractInstance = new Contract(witnesses);
 
@@ -32,22 +35,26 @@ export interface DeployedAPI {
   readonly deployedContractAddress: ContractAddress;
   readonly state$: Observable<DerivedState>;  
 
-  mint: () => Promise<void>;
-  owner_withdraw: () => Promise<void>;
+  start_bid: () => Promise<void>;
+  close_bid: () => Promise<void>;
+  approve_certificates: (approved_hashes: Maybe<Uint8Array>[]) => Promise<void>;
+  register: () => Promise<void>;
+  make_bid: (value: number) => Promise<void>;
 }
 
 export class API implements DeployedAPI {
   private constructor(
     public readonly contractPrivateId: string,
+    public readonly tokenContractAddress: ContractAddress,
     public readonly deployedContract: DeployedContract,
     public readonly providers: Providers,
     private readonly logger: Logger,
   ) {
     const combine = (acc: DerivedState, value: DerivedState): DerivedState => {
       return {
-        tvlDust: value.tvlDust,
-        tvlToken: value.tvlToken,
-        isOwner: value.isOwner,
+        state: value.state,
+        whoami: value.whoami,
+        registered: value.registered,
         userAction: value.userAction,
       };
     };
@@ -69,10 +76,18 @@ export class API implements DeployedAPI {
         this.turns$ 
       ],
       (ledgerState, privateState, userAction) => {
+        const whoami = pureCircuits.registration_hash(privateState.certificate);
+        let maybeKeys: Maybe<Uint8Array>[] = [];
+        for (const [key, value] of ledgerState.registeredHashes) {          
+          maybeKeys.push({
+            is_some: true,
+            value: key,
+          });
+        }       
         const result: DerivedState = {
-          tvlDust: ledgerState.tvlDust,
-          tvlToken: ledgerState.tvlToken,
-          isOwner: toHex(ledgerState.ownerPublicKey.bytes) === providers.walletProvider.coinPublicKey,
+          state: ledgerState.state,
+          whoami: toHex(whoami),
+          registered: maybeKeys,
           userAction
         };
         return result;
@@ -94,86 +109,188 @@ export class API implements DeployedAPI {
 
   readonly privateStates$: Subject<PrivateState>;
 
-  coin(value: bigint): CoinInfo {
-    return {
-      nonce: utils.randomBytes(32),
-      color: encodeTokenType(tokenType(utils.pad('mesh_coin', 32), this.deployedContractAddress)),
-      value: value,
-    };
-  }
-
-  coin_dust(value: bigint): CoinInfo {
-    return {
-      nonce: utils.randomBytes(32),
-      color: encodeTokenType(nativeToken()),
-      value: value,
-    };
-  }
-
-  async mint(): Promise<void> {
-    this.logger?.info('Minting Mesh token');
+  async start_bid(): Promise<void> {
+    this.logger?.info('Starting Bid');
     this.turns$.next({
-      action: 'minting',      
+      action: 'opening-bid',
       error: undefined,
     });
-    try {
-      const txData = await this.deployedContract.callTx.mint(this.coin_dust(100000000n));
-      console.log('Minting: emitting "minting-done"');
-      this.turns$.next({
-        action: "minting-done",        
-        error: undefined,
-      });
-      this.logger?.trace({
-        mint: {
-          txHash: txData.public.txHash,
-          blockHeight: txData.public.blockHeight,
-        },
-      });     
-    } catch (e) {
-      this.turns$.next({
-        action: undefined,        
-        error: 'minting-error',
-      });
-      throw e;
-    } 
-  }
 
-  async owner_withdraw(): Promise<void> {
-    this.logger?.info('Withdrawing money');
-    this.turns$.next({
-      action: 'withdrawing',      
-      error: undefined,
-    });
     try {
-      const txData = await this.deployedContract.callTx.owner_withdraw();
+      const txData = await this.deployedContract.callTx.start_bid();
       this.logger?.trace({
-        withdraw: {
+        start_bid: {
           txHash: txData.public.txHash,
           blockHeight: txData.public.blockHeight,
         },
       });
-      this.turns$.next({        
-        action: 'withdrawing-done',
+      this.turns$.next({
+        action: 'opening-done',
         error: undefined,
       });
     } catch (e) {
       this.turns$.next({
-        action: undefined,        
-        error: 'withdrawing-error',
+        action: undefined,
+        error: 'opening-error',
       });
       throw e;
     }
   }
 
-  static async deploy(contractPrivateId: string, providers: Providers, logger: Logger): Promise<API> {
+  async close_bid(): Promise<void> {
+    this.logger?.info('Closing the bid');
+    this.turns$.next({
+      action: 'closing-bid',
+      error: undefined,
+    });
+    try {
+      const txData = await this.deployedContract.callTx.close_bid();
+      this.logger?.trace({
+        close_bid: {
+          txHash: txData.public.txHash,
+          blockHeight: txData.public.blockHeight,
+        },
+      });
+      this.turns$.next({
+        action: 'closing-done',
+        error: undefined,
+      });
+    } catch (e) {
+      this.turns$.next({
+        action: undefined,
+        error: 'closing-error',
+      });
+      throw e;
+    }
+  }
+
+  coin(value: number): CoinInfo {
+    return {
+      nonce: utils.randomBytes(32),
+      color: encodeTokenType(tokenType(utils.pad('mesh_coin', 32), this.tokenContractAddress)),
+      value: BigInt(value),
+    };
+  }
+
+  static coin_dust(value: number): CoinInfo {
+    return {
+      nonce: utils.randomBytes(32),
+      color: encodeTokenType(nativeToken()),
+      value: BigInt(value * 1000000),
+    };
+  }
+
+  async approve_certificates(approved_hashes: Maybe<Uint8Array>[]): Promise<void> {
+    this.logger?.info('Approving certificates');
+    this.turns$.next({
+      action: 'approving-hashed',
+      error: undefined,
+    });
+    try {
+      const txData = await this.deployedContract.callTx.approve_certificates(approved_hashes);
+      this.logger?.trace({
+        approve_certificates: {
+          txHash: txData.public.txHash,
+          blockHeight: txData.public.blockHeight,
+        },
+      });
+      this.turns$.next({
+        action: 'approving-hashedDone',
+        error: undefined,
+      });
+    } catch (e) {
+      this.turns$.next({
+        action: undefined,
+        error: 'approving-error',
+      });
+      throw e;
+    }
+  }
+
+  async register(): Promise<void> {
+    this.logger?.info('Registering to the bid');
+    this.turns$.next({
+      action: 'registering',
+      error: undefined,
+    });
+    try {
+      const txData = await this.deployedContract.callTx.register();
+      this.logger?.trace({
+        register: {
+          txHash: txData.public.txHash,
+          blockHeight: txData.public.blockHeight,
+        },
+      });
+      this.turns$.next({
+        action: 'registering-done',
+        error: undefined,
+      });
+    } catch (e) {
+      this.turns$.next({
+        action: undefined,
+        error: 'registering-error',
+      });
+      throw e;
+    }
+  }
+
+  async make_bid(value: number): Promise<void> {
+    this.logger?.info('Making a bid');
+    this.turns$.next({
+      action: 'bidding',
+      error: undefined,
+    });
+    try {
+      const txData = await this.deployedContract.callTx.make_bid(this.coin(value));
+      this.logger?.trace({
+        make_bid: {
+          txHash: txData.public.txHash,
+          blockHeight: txData.public.blockHeight,
+        },
+      });
+      this.turns$.next({
+        action: 'bidding-done',
+        error: undefined,
+      });
+    } catch (e) {
+      this.turns$.next({
+        action: undefined,
+        error: 'bidding-error',
+      });
+      throw e;
+    }
+  }
+
+  static async deploy(
+    contractPrivateId: string,
+    tokenContractAddress: string,
+    providers: Providers,
+    logger: Logger,
+    title: string,
+    description: string,
+    estimated_value: number,
+    deadline: string,
+    image: string,
+  ): Promise<API> {
     logger.info({
-      deployContract: 'deploying Minting Contract',
+      deployContract: {
+        contractPrivateId,
+      },
     });
     const deployedTemplateContract = await deployContract(providers, {
       privateStateKey: contractPrivateId,
       contract: contractInstance,
       initialPrivateState: await API.getPrivateState(contractPrivateId, providers.privateStateProvider),
-      args: [ utils.randomBytes(32) ],
+      args: [
+        {
+          bytes: encodeContractAddress(tokenContractAddress),
+        },
+        title,
+        description,
+        BigInt(estimated_value),
+        deadline,
+        image,
+      ],
     });
 
     logger.trace({
@@ -183,11 +300,12 @@ export class API implements DeployedAPI {
       },
     });
 
-    return new API(contractPrivateId, deployedTemplateContract, providers, logger);
+    return new API(contractPrivateId, tokenContractAddress, deployedTemplateContract, providers, logger);
   }
 
   static async subscribe(
-    contractPrivateId: string,    
+    contractPrivateId: string,
+    tokenContractAddress: ContractAddress,
     providers: Providers,
     contractAddress: ContractAddress,
     logger: Logger,
@@ -213,7 +331,7 @@ export class API implements DeployedAPI {
       },
     });
 
-    return new API(contractPrivateId, deployedContract, providers, logger);
+    return new API(contractPrivateId, tokenContractAddress, deployedContract, providers, logger);
   }
 
   static async getOrCreateInitialPrivateState(
@@ -222,7 +340,14 @@ export class API implements DeployedAPI {
     let state = await privateStateProvider.get('start');
 
     if (state === null) {
-      state = this.createPrivateState();
+      state = this.createPrivateState({
+        age: 0n,
+        aml: false,
+        jurisdiction: false,
+        owner: { bytes: new Uint8Array(32) },
+        issuer: { bytes: new Uint8Array(32) },
+        sk: utils.randomBytes(32),
+      });
       await privateStateProvider.set('start', state);
     }
     return state;
@@ -239,7 +364,16 @@ export class API implements DeployedAPI {
     } catch (e) {
       return false;
     }
-  }  
+  }
+
+  static async getCertificateHash(
+    providers: Providers,
+    contractPrivateId: string,
+    contractAddress: ContractAddress,
+  ): Promise<Uint8Array | null> {
+    const private_state = await this.getPrivateState(contractPrivateId, providers.privateStateProvider);
+    return pureCircuits.registration_hash(private_state.certificate);
+  }
 
   private static async getPrivateState(
     contractPrivateId: string,
@@ -250,8 +384,8 @@ export class API implements DeployedAPI {
     return existingPrivateState ?? initialState;
   }
 
-  private static createPrivateState(): PrivateState {
-    return createPrivateState();
+  private static createPrivateState(certificate: Certificate): PrivateState {
+    return createPrivateState(certificate);
   }
 }
 

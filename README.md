@@ -62,17 +62,20 @@ Midnight structure:
 - 16 april - toolings published and documented ready for beta release
 - 24 april - buidler fest in workshop (midnight tooling....)
 
-## Findings
+## Findings or Improvements
 
 - Situation where phase1 passes but phase2 fails:
     1. merge_coin can be used alongside a CoinInfo and Write_coin
     2. sizes of circuits
+    3. Phase1 only takes in consideration private States, and logic from coins received from circuits. The testing framework does not consider ZswapCoinPks for users since they are filled with zeros for all cases, and Zswap coin balances.
 
 ## Procedure to intialize
+    - yarn
     - yarn build
+    - Update token address at token.api test
     - yarn environment
-    - yarn dev
     - Update Token address at _app.tsx
+    - yarn dev
 
 ## Need to be installed
     - docker --version

@@ -5,13 +5,16 @@
   "scripts": {
     "copy-bboard-keys": "mkdir -p ./public/midnight/bboard/keys && mkdir -p ./public/midnight/bboard/zkir && cp -r ../bboard-contract/dist/managed/bboard/keys/* ./public/midnight/bboard/keys && cp -r ../bboard-contract/dist/managed/bboard/zkir/* ./public/midnight/bboard/zkir",
     "copy-token-keys": "mkdir -p ./public/midnight/token/keys && mkdir -p ./public/midnight/token/zkir && cp -r ../token-contract/dist/managed/token/keys/* ./public/midnight/token/keys && cp -r ../token-contract/dist/managed/token/zkir/* ./public/midnight/token/zkir",
-    "dev": "yarn copy-bboard-keys && yarn copy-token-keys && next dev",
+    "copy-auction-keys": "mkdir -p ./public/midnight/auction/keys && mkdir -p ./public/midnight/auction/zkir && cp -r ../auction-contract/dist/managed/auction/keys/* ./public/midnight/auction/keys && cp -r ../auction-contract/dist/managed/auction/zkir/* ./public/midnight/auction/zkir",
+    "dev": "yarn copy-bboard-keys && yarn copy-token-keys && yarn copy-auction-keys && next dev",
     "build:ui": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.0.0",
+    "@meshsdk/auction-api": "workspace:*",
+    "@meshsdk/auction-contract": "workspace:*",
     "@meshsdk/bboard-api": "workspace:*",
     "@meshsdk/bboard-contract": "workspace:*",
     "@meshsdk/token-api": "workspace:*",

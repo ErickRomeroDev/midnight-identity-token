@@ -5,21 +5,20 @@ import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
 
 const Page = () => {
   const { address, coinPublicKey, encryptionPublicKey, walletName, hasConnectedWallet, isProofServerOnline } = useAssets();
-  const { setOpen, disconnect } = useWallet();  
-  const providers = useProviders();
-  const {tokenContractStates, tokenDeployment, deployedAPI, derivedState, turnsState } = useSubscriptions();
+  const { setOpen, disconnect } = useWallet();
 
-  console.log({ tokenContractStates });
+  const providers = useProviders();
+  const { tokenDeployment, deployedAPI, derivedState } = useSubscriptions();  
+
   console.log({ tokenDeployment });
-  console.log({deployedAPI});
-  console.log({derivedState});
-  console.log({turnsState});
+  console.log({ deployedAPI });
+  console.log({ derivedState });  
 
   const mint = () => {
     if (deployedAPI) {
-      deployedAPI.mint()
+      deployedAPI.mint();
     }
-  }
+  };
 
   return (
     <div className="flex flex-col text-white">
