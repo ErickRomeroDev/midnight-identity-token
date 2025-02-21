@@ -22,7 +22,7 @@ import {
 } from '@meshsdk/auction-contract';
 import * as utils from './utils/index.js';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
-import { combineLatest, concat, defer, from, map, type Observable, of, retry, scan, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, defer, from, map, type Observable, of, retry, scan, Subject } from 'rxjs';
 import { toHex } from '@midnight-ntwrk/midnight-js-utils';
 import type { PrivateStateProvider } from '@midnight-ntwrk/midnight-js-types/dist/private-state-provider';
 import { encodeTokenType } from '@midnight-ntwrk/onchain-runtime';
@@ -33,8 +33,7 @@ const contractInstance: ContractInstance = new Contract(witnesses);
 
 export interface DeployedAPI {
   readonly deployedContractAddress: ContractAddress;
-  readonly state$: Observable<DerivedState>;
-  readonly turns$: Observable<UserAction>;
+  readonly state$: Observable<DerivedState>;  
 
   start_bid: () => Promise<void>;
   close_bid: () => Promise<void>;
@@ -56,10 +55,14 @@ export class API implements DeployedAPI {
         state: value.state,
         whoami: value.whoami,
         registered: value.registered,
+        userAction: value.userAction,
       };
     };
     this.deployedContractAddress = deployedContract.deployTxData.public.contractAddress;
-    this.turns$ = new Subject<UserAction>();
+    this.turns$ = new BehaviorSubject<UserAction>({
+      action: undefined,      
+      error: undefined,
+    });
     this.privateStates$ = new Subject<PrivateState>();
     this.state$ = combineLatest(
       [
@@ -70,9 +73,9 @@ export class API implements DeployedAPI {
           from(defer(() => providers.privateStateProvider.get(contractPrivateId) as Promise<PrivateState>)),
           this.privateStates$,
         ),
-        concat(of<UserAction>({ action: undefined, error: undefined }), this.turns$),
+        this.turns$ 
       ],
-      (ledgerState, privateState, userActions) => {
+      (ledgerState, privateState, userAction) => {
         const whoami = pureCircuits.registration_hash(privateState.certificate);
         let maybeKeys: Maybe<Uint8Array>[] = [];
         for (const [key, value] of ledgerState.registeredHashes) {          
@@ -85,6 +88,7 @@ export class API implements DeployedAPI {
           state: ledgerState.state,
           whoami: toHex(whoami),
           registered: maybeKeys,
+          userAction
         };
         return result;
       },
@@ -101,7 +105,7 @@ export class API implements DeployedAPI {
 
   readonly state$: Observable<DerivedState>;
 
-  readonly turns$: Subject<UserAction>;
+  readonly turns$: BehaviorSubject<UserAction>;
 
   readonly privateStates$: Subject<PrivateState>;
 

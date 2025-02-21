@@ -20,7 +20,7 @@ import {
 } from '@meshsdk/token-contract';
 import * as utils from './utils/index.js';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
-import { combineLatest, concat, defer, from, map, type Observable, of, retry, scan, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, defer, from, map, type Observable, of, retry, scan, Subject } from 'rxjs';
 import { toHex } from '@midnight-ntwrk/midnight-js-utils';
 import type { PrivateStateProvider } from '@midnight-ntwrk/midnight-js-types/dist/private-state-provider';
 import { encodeTokenType } from '@midnight-ntwrk/onchain-runtime';
@@ -30,8 +30,7 @@ const contractInstance: ContractInstance = new Contract(witnesses);
 
 export interface DeployedAPI {
   readonly deployedContractAddress: ContractAddress;
-  readonly state$: Observable<DerivedState>;
-  readonly turns$: Observable<UserAction>;
+  readonly state$: Observable<DerivedState>;  
 
   mint: () => Promise<void>;
   owner_withdraw: () => Promise<void>;
@@ -49,10 +48,14 @@ export class API implements DeployedAPI {
         tvlDust: value.tvlDust,
         tvlToken: value.tvlToken,
         isOwner: value.isOwner,
+        userAction: value.userAction,
       };
     };
     this.deployedContractAddress = deployedContract.deployTxData.public.contractAddress;
-    this.turns$ = new Subject<UserAction>();
+    this.turns$ = new BehaviorSubject<UserAction>({
+      action: undefined,      
+      error: undefined,
+    });
     this.privateStates$ = new Subject<PrivateState>();
     this.state$ = combineLatest(
       [
@@ -63,13 +66,14 @@ export class API implements DeployedAPI {
           from(defer(() => providers.privateStateProvider.get(contractPrivateId) as Promise<PrivateState>)),
           this.privateStates$,
         ),
-        concat(of<UserAction>({ mint: undefined, withdraw: undefined, error: undefined }), this.turns$),
+        this.turns$ 
       ],
-      (ledgerState, privateState, userActions) => {
+      (ledgerState, privateState, userAction) => {
         const result: DerivedState = {
           tvlDust: ledgerState.tvlDust,
           tvlToken: ledgerState.tvlToken,
           isOwner: toHex(ledgerState.ownerPublicKey.bytes) === providers.walletProvider.coinPublicKey,
+          userAction
         };
         return result;
       },
@@ -86,7 +90,7 @@ export class API implements DeployedAPI {
 
   readonly state$: Observable<DerivedState>;
 
-  readonly turns$: Subject<UserAction>;
+  readonly turns$: BehaviorSubject<UserAction>;
 
   readonly privateStates$: Subject<PrivateState>;
 
@@ -109,27 +113,25 @@ export class API implements DeployedAPI {
   async mint(): Promise<void> {
     this.logger?.info('Minting Mesh token');
     this.turns$.next({
-      mint: 'minting',
-      withdraw: undefined,
+      action: 'minting',      
       error: undefined,
     });
     try {
       const txData = await this.deployedContract.callTx.mint(this.coin_dust(100000000n));
+      console.log('Minting: emitting "minting-done"');
+      this.turns$.next({
+        action: "minting-done",        
+        error: undefined,
+      });
       this.logger?.trace({
         mint: {
           txHash: txData.public.txHash,
           blockHeight: txData.public.blockHeight,
         },
-      });
-      this.turns$.next({
-        mint: 'minting-done',
-        withdraw: undefined,
-        error: undefined,
-      });
+      });     
     } catch (e) {
       this.turns$.next({
-        mint: undefined,
-        withdraw: undefined,
+        action: undefined,        
         error: 'minting-error',
       });
       throw e;
@@ -139,8 +141,7 @@ export class API implements DeployedAPI {
   async owner_withdraw(): Promise<void> {
     this.logger?.info('Withdrawing money');
     this.turns$.next({
-      mint: undefined,
-      withdraw: 'withdrawing',
+      action: 'withdrawing',      
       error: undefined,
     });
     try {
@@ -151,15 +152,13 @@ export class API implements DeployedAPI {
           blockHeight: txData.public.blockHeight,
         },
       });
-      this.turns$.next({
-        mint: undefined,
-        withdraw: 'withdrawing-done',
+      this.turns$.next({        
+        action: 'withdrawing-done',
         error: undefined,
       });
     } catch (e) {
       this.turns$.next({
-        mint: undefined,
-        withdraw: undefined,
+        action: undefined,        
         error: 'withdrawing-error',
       });
       throw e;

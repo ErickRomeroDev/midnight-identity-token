@@ -17,8 +17,7 @@ export type Providers = MidnightProviders<CircuitKeys, PrivateStates>;
 export type DeployedContract = FoundContract<PrivateState, ContractInstance>;
 
 export type UserAction = {
-  mint: "minting" | "minting-done" | undefined;
-  withdraw: "withdrawing" | "withdrawing-done" | undefined;
+  action: "minting" | "minting-done" | "withdrawing" | "withdrawing-done" | undefined;  
   error: "minting-error" | "withdrawing-error" | undefined;
 };
 
@@ -26,12 +25,14 @@ export type DerivedState = {
   readonly tvlDust: bigint;
   readonly tvlToken: bigint;    
   readonly isOwner: boolean;
+  userAction: UserAction
 };
 
 export const emptyState: DerivedState = {    
   tvlDust: 0n,
   tvlToken: 0n,
-  isOwner: false 
+  isOwner: false, 
+  userAction: { action: undefined, error: undefined }
 };
 
 

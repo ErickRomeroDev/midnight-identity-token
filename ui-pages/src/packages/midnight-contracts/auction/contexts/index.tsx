@@ -1,15 +1,15 @@
 import React from 'react';
-import { DeployedProvider } from './bboard-deployment';
-import { BboardLocalStorageProvider } from './bboard-localStorage';
-import { Provider } from './bboard-providers';
+import { DeployedProvider } from './auction-deployment';
+import { LocalStorageProvider } from './auction-localStorage';
+import { Provider } from './auction-providers';
 import { Logger } from 'pino';
 import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 
-export * from './bboard-providers';
-export * from './bboard-localStorage';
-export * from './bboard-localStorage-class';
-export * from './bboard-deployment';
-export * from './bboard-deployment-class';
+export * from './auction-providers';
+export * from './auction-localStorage';
+export * from './auction-localStorage-class';
+export * from './auction-deployment';
+export * from './auction-deployment-class';
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -19,10 +19,12 @@ interface AppProviderProps {
 
 export const AppProvider = ({ children, logger, TOKEN_ADDRESS }: AppProviderProps) => {
   return (
-    <BboardLocalStorageProvider logger={logger}>
+    <LocalStorageProvider logger={logger}>
       <Provider logger={logger}>
-        <DeployedProvider logger={logger} TOKEN_ADDRESS={TOKEN_ADDRESS}>{children}</DeployedProvider>
+        <DeployedProvider logger={logger} TOKEN_ADDRESS={TOKEN_ADDRESS}>
+          {children}
+        </DeployedProvider>
       </Provider>
-    </BboardLocalStorageProvider>
+    </LocalStorageProvider>
   );
 };

@@ -1,8 +1,8 @@
-import { API, type Providers, type DeployedAPI } from '@meshsdk/bboard-api';
+import { API, type Providers, type DeployedAPI } from '@meshsdk/auction-api';
 import { type ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import { BehaviorSubject, type Observable } from 'rxjs';
 import { type Logger } from 'pino';
-import { type LocalStorageProps } from './bboard-localStorage-class';
+import { type LocalStorageProps } from './auction-localStorage-class';
 
 export type ContractType = 'recent' | 'youcouldjoin' | 'yours' | 'allOther';
 
@@ -34,7 +34,14 @@ export type ContractDeployment = InProgressContractDeployment | DeployedContract
 export interface DeployedAPIProvider {
   readonly contractDeployments$: Observable<ContractState[]>;
   readonly addContract: (contractType: ContractType, contractAddress: ContractAddress) => ContractState;
-  readonly deployAndAddContract: (contractType: ContractType) => Promise<ContractState>;
+  readonly deployAndAddContract: (
+    contractType: ContractType,
+    title: string,
+    description: string,
+    estimated_value: number,
+    deadline: string,
+    image: string,
+  ) => Promise<ContractState>;
 }
 
 export class DeployedTemplateManager implements DeployedAPIProvider {
@@ -71,7 +78,14 @@ export class DeployedTemplateManager implements DeployedAPIProvider {
     return contract;
   }
 
-  async deployAndAddContract(contractType: ContractType): Promise<ContractState> {
+  async deployAndAddContract(
+    contractType: ContractType,
+    title: string,
+    description: string,
+    estimated_value: number,
+    deadline: string,
+    image: string,
+  ): Promise<ContractState> {
     const deployments = this.#contractDeploymentsSubject.value;
 
     const deployment = new BehaviorSubject<ContractDeployment>({
@@ -80,19 +94,36 @@ export class DeployedTemplateManager implements DeployedAPIProvider {
 
     const contract: ContractState = { observable: deployment, contractType };
 
-    this.#contractDeploymentsSubject.next([...deployments, contract]);    
-    const address = await this.deploy(deployment);    
+    this.#contractDeploymentsSubject.next([...deployments, contract]);
+    const address = await this.deploy(deployment, title, description, estimated_value, deadline, image);
 
     return { observable: deployment, contractType, address };
   }
 
-  private async deploy(deployment: BehaviorSubject<ContractDeployment>): Promise<string | undefined> {
+  private async deploy(
+    deployment: BehaviorSubject<ContractDeployment>,
+    title: string,
+    description: string,
+    estimated_value: number,
+    deadline: string,
+    image: string,
+  ): Promise<string | undefined> {
     try {
-      if (this.providers) {        
+      if (this.providers) {
         const uuid: string = crypto.randomUUID();
-        console.log({uuid, Address: this.tokenContractAddress, providers: this.providers, logger: this.logger})
-        const api = await API.deploy(uuid, this.tokenContractAddress, this.providers, this.logger);
-        console.log("api apos o deploy", api)
+        console.log({ uuid, Address: this.tokenContractAddress, providers: this.providers, logger: this.logger });
+        const api = await API.deploy(
+          uuid,
+          this.tokenContractAddress,
+          this.providers,
+          this.logger,
+          title,
+          description,
+          estimated_value,
+          deadline,
+          image,
+        );
+        console.log('api apos o deploy', api);
         this.localState.setContractPrivateId(uuid, api.deployedContractAddress);
         this.localState.addContract(api.deployedContractAddress);
 

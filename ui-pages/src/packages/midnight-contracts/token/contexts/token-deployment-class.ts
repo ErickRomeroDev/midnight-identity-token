@@ -71,6 +71,7 @@ export class DeployedTemplateManager implements DeployedAPIProvider {
   private async join(deployment: BehaviorSubject<ContractDeployment>, contractAddress: ContractAddress): Promise<void> {
     try {
       if (this.providers) {
+        //proivide a random uuid since i do not need private state for this contract
         const uuid: string = crypto.randomUUID();        
         const api = await API.subscribe(uuid, this.providers, contractAddress, this.logger);
 

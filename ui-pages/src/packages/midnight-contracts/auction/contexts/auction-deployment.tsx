@@ -2,9 +2,9 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext } from 'react';
 import { type Logger } from 'pino';
 
-import type { DeployedAPIProvider } from './bboard-deployment-class';
+import type { DeployedAPIProvider } from './auction-deployment-class';
 import { useLocalState } from '../hooks/use-localStorage';
-import { DeployedTemplateManager } from './bboard-deployment-class';
+import { DeployedTemplateManager } from './auction-deployment-class';
 import { useProviders } from '../hooks';
 import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 
@@ -19,7 +19,9 @@ export const DeployedProvider = ({ logger, TOKEN_ADDRESS, children }: DeployedPr
   const localState = useLocalState();
   const providers = useProviders();
   return (
-    <DeployedProviderContext.Provider value={new DeployedTemplateManager(logger, localState, TOKEN_ADDRESS, providers?.providers)}>
+    <DeployedProviderContext.Provider
+      value={new DeployedTemplateManager(logger, localState, TOKEN_ADDRESS, providers?.providers)}
+    >
       {children}
     </DeployedProviderContext.Provider>
   );

@@ -16,7 +16,7 @@ import {
   createBalancedTx,
 } from '@midnight-ntwrk/midnight-js-types';
 import { Logger } from 'pino';
-import type { CircuitKeys } from '@meshsdk/bboard-api';
+import type { CircuitKeys } from '@meshsdk/auction-api';
 import {
   CachedFetchZkConfigProvider,
   noopProofClient,
@@ -24,7 +24,7 @@ import {
   WrappedPrivateStateProvider,
   WrappedPublicDataProvider,
 } from '@/packages/midnight-core/providers-wrappers';
-import { PrivateStates, Providers } from '@meshsdk/bboard-api';
+import { PrivateStates, Providers } from '@meshsdk/auction-api';
 import { Transaction as ZswapTransaction } from '@midnight-ntwrk/zswap';
 import { getLedgerNetworkId, getZswapNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import { Transaction } from '@midnight-ntwrk/ledger';
@@ -82,7 +82,7 @@ export const Provider = ({ children, logger }: ProviderProps) => {
     () =>
       new WrappedPrivateStateProvider(
         levelPrivateStateProvider({
-          privateStateStoreName: 'battleship-private-state',
+          privateStateStoreName: 'auction-private-state',
         }),
         logger,
       ),
@@ -103,7 +103,7 @@ export const Provider = ({ children, logger }: ProviderProps) => {
       return undefined;
     }
     return new CachedFetchZkConfigProvider<CircuitKeys>(
-      `${window.location.origin}/midnight/bboard`,
+      `${window.location.origin}/midnight/auction`,
       fetch.bind(window),
       () => {},
     );

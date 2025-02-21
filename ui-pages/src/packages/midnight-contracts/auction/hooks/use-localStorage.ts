@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { BboardLocalStorageContext } from '../contexts/bboard-localStorage';
-import { LocalStorageProps } from '../contexts/bboard-localStorage-class';
+import { LocalStorageContext } from '../contexts/auction-localStorage';
+import { LocalStorageProps } from '../contexts/auction-localStorage-class';
 
 export const useLocalState = (): LocalStorageProps => {
-  const context = useContext(BboardLocalStorageContext);
+  const context = useContext(LocalStorageContext);
 
   if (!context) {
     throw new Error('Hook being used outside of the provider');
