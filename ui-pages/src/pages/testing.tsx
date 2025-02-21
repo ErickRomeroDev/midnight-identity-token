@@ -22,7 +22,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col text-white">
       <CardanoWallet />
       <div>Address: {address}</div>
       <div>Coin PublicKey: {coinPublicKey}</div>

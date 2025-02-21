@@ -1,28 +1,27 @@
 import { useDeployedContracts, useProviders, ContractState, ContractDeployment } from '@/packages/midnight-contracts/token';
 import { useAssets } from '@/packages/midnight-react';
-import { DeployedAPI, DerivedState, UserAction } from '@meshsdk/token-api';
+import { DeployedAPI, DerivedState } from '@meshsdk/token-api';
 import { useCallback, useEffect, useState } from 'react';
-import { auditTime, distinctUntilChanged, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export const useSubscriptions = () => {
   const { hasConnectedWallet } = useAssets();
   const providers = useProviders();
 
-  const deploy = useDeployedContracts();  
-  const [tokenContractStates, setTokenContractStates] = useState<ContractState[]>([]);
+  const deploy = useDeployedContracts();
+  const [tokenContractDeployments, setTokenContractDeployments] = useState<ContractState[]>([]);
   const [tokenDeploymentObservable, setTokenDeploymentObservable] = useState<Observable<ContractDeployment> | undefined>(
     undefined,
   );
   const [tokenDeployment, setTokenDeployment] = useState<ContractDeployment>();
   const [deployedAPI, setDeployedAPI] = useState<DeployedAPI>();
   const [derivedState, setDerivedState] = useState<DerivedState>();
-  const [turnsState, setTurnsState] = useState<UserAction>();
 
   useEffect(() => {
     if (!deploy) {
       return;
     }
-    const subscription = deploy.contractDeployments$.subscribe(setTokenContractStates);
+    const subscription = deploy.contractDeployments$.subscribe(setTokenContractDeployments);
 
     return () => {
       subscription.unsubscribe();
@@ -54,31 +53,26 @@ export const useSubscriptions = () => {
     if (!tokenDeployment) {
       return;
     }
-    if (tokenDeployment.status === 'in-progress') {
-      return;
-    }
 
-    if (tokenDeployment.status === 'failed') {
+    if (tokenDeployment.status === 'in-progress' || tokenDeployment.status === 'failed') {
       return;
     }
-    setDeployedAPI(tokenDeployment.api);
-    const subscriptionDerivedState = tokenDeployment.api.state$
-      .pipe(auditTime(1000), distinctUntilChanged())
-      .subscribe(setDerivedState);
-    const subscriptionTurnsState = tokenDeployment.api.turns$
-      .pipe(auditTime(1000), distinctUntilChanged())
-      .subscribe(setTurnsState);
-    return () => {
-      subscriptionDerivedState.unsubscribe();
-      subscriptionTurnsState.unsubscribe();
-    };
+    setDeployedAPI((prev) => prev || tokenDeployment.api);
   }, [tokenDeployment, setDeployedAPI]);
 
+  useEffect(() => {
+    if (deployedAPI) {
+      const subscriptionDerivedState = deployedAPI.state$.subscribe(setDerivedState);
+      return () => {
+        subscriptionDerivedState.unsubscribe();
+      };
+    }
+  }, [deployedAPI]);
+
   return {
-    tokenContractStates,
+    tokenContractDeployments,
     tokenDeployment,
     deployedAPI,
     derivedState,
-    turnsState
   };
 };
