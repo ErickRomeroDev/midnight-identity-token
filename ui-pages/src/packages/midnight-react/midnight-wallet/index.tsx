@@ -23,7 +23,7 @@ export const CardanoWallet = () => {
       <div>
         {!hasConnectedWallet ? (
           <DialogTrigger asChild>
-            <Button variant="outline">Connect Wallet</Button>
+            <button className="w-[140px] hover:text-[#D28C13]">Connect Wallet</button>
           </DialogTrigger>
         ) : (
           <ConnectedButton />

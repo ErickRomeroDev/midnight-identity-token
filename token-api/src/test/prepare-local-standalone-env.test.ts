@@ -72,7 +72,7 @@ async function sendCustomToken(address: string, amount: bigint): Promise<string>
 test('prepare local env', async () => {
   // fund my wallets
   await sendNativeToken(
-    '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88',
+    '1ddf9400a719ebe1fb022aff0ed1b4f3feed7abcc94138d5d6b0523450b4c70b|03001a5e065fd1710ad50ff81f25ac2baa8f76dfe957a7570e3982a31d3d0f9e58e80e2f6bb0ee20dd38991d7217aa4ef2b5526e5fd8d6f43409',
     10000n * 1000000n,
   );
 
