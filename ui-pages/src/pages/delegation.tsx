@@ -73,11 +73,11 @@ const Page = () => {
   };
 
   return (
-    <>
+    <div className='mt-[70px]'>
       <CardanoWallet />
       <div className='cursor-pointer' onClick={submitTx}>Submit Delegation Tx</div>
       <div className='cursor-pointer' onClick={submitTxTest}>Test Tx</div>
-    </>
+    </div>
   );
 };
 
