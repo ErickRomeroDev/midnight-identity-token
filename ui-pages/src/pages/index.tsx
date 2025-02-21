@@ -6,12 +6,7 @@ import { useSubscriptions } from '@/packages/midnight-contracts/token/hooks/use-
 import { useEffect } from 'react';
 
 const Page = () => {
-  const providers = useProviders();
-  const {turnsState} = useSubscriptions();
-  console.log({turnsState})
-  // useEffect(() => {
-  //   console.log({turnsState})
-  // }, [turnsState])
+  const providers = useProviders();   
   
   return (
     <>
