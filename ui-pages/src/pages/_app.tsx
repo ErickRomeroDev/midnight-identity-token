@@ -16,7 +16,7 @@ import { MeshProvider } from '@meshsdk/react';
 // const networkId = 'TestNet' as NetworkId;
 const networkId = 'Undeployed' as NetworkId;
 setNetworkId(networkId);
-const TOKEN_ADDRESS = '0200f66dc09afc456b344cf87f954b9dce319dffd6890c836cf1fc688566e4963903' as ContractAddress;
+const TOKEN_ADDRESS = process.env.NEXT_PUBLIC_TOKEN_SMART_CONTRACT! as ContractAddress;
 
 export const logger = pino.pino({
   level: 'trace',

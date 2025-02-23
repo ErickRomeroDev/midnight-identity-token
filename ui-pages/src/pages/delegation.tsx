@@ -5,7 +5,7 @@ import { BlockfrostProvider, MeshTxBuilder } from "@meshsdk/core";
 
 const Page = () => {
   const { connected, wallet } = useWallet();
-  const blockchainProvider = new BlockfrostProvider('mainnet5I0Y4bPezJmM6PyTCPeCjvdJ1pbW7rht');
+  const blockchainProvider = new BlockfrostProvider(process.env.NEXT_PUBLIC_BLOCKFROST_ID!);
 
   const txBuilder = new MeshTxBuilder({
     fetcher: blockchainProvider,
@@ -54,7 +54,7 @@ const Page = () => {
       if (rewardAddress) {
         try {
           const unsignedTx = await txBuilder
-            .txOut('addr1qyven0x24ujtl7ds60znrkcspe2lsw7s6drzhzlswufvej6px8c4u8333cd2q553fwsnm4j6qx4c6ykn6p9hhmwu9rnst99g0l', [
+            .txOut('addr_test1qr3jwk6039g88vwnjwd77grpk7nx3xu0dxcgfhql5xh3pwj680nmgxyd0ehkz54tj8h3d8j6r4e0uc8xq75ew680yhasj2n6tm', [
               { unit: 'lovelace', quantity: '1000000' },
             ])            
             .changeAddress(changeAddress)

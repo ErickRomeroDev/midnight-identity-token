@@ -70,12 +70,16 @@ Midnight structure:
     3. Phase1 only takes in consideration private States, and logic from coins received from circuits. The testing framework does not consider ZswapCoinPks for users since they are filled with zeros for all cases, and Zswap coin balances.
 
 ## Procedure to intialize
-    - yarn
-    - yarn build
-    - Update token address at token.api test
-    - yarn environment
-    - Update Token address at _app.tsx
-    - yarn dev
+    1. Initialize Variables
+        - Go to /token-api/src/test/prepare-local-standalone-env.test.ts and update the my_own_wallet variable with your own wallet address
+    2. Build the repo and initialize Midnight instances. At the root level, run:
+        - yarn
+        - yarn build
+        - yarn environment
+    3. Run the UI. At the /ui-pages level, run:
+        - Create a .env file (reference .env.example). Key for the Postgress database will be created automatically. Key for your Blockfrost needs to be inserted. Token smart contract address was created when "yarn environment was executed". 
+        - yarn dev
+        - yarn db:init
 
 ## Need to be installed
     - docker --version

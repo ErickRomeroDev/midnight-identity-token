@@ -10,6 +10,7 @@ import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import * as utils from '../utils/index.js';
 import { API, type Providers } from '../index';
 
+const my_own_wallet = '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88'
 const logDir = path.resolve(currentDir, '..', 'logs', 'tests', `${new Date().toISOString()}.log`);
 const logger = await createLogger(logDir);
 
@@ -75,17 +76,17 @@ async function sendCustomToken(address: string, amount: bigint): Promise<string>
 test('prepare local env', async () => {
   // fund my wallets
   await sendNativeToken(
-    '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88',
+    my_own_wallet,
     10000n * 1000000n,
   );
   console.log('funded');
 
-  // await owner.mint();
+  await owner.mint();
 
-  // await sendCustomToken(
-  //   '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88',
-  //   100n,
-  // );
+  await sendCustomToken(
+    my_own_wallet,
+    100n,
+  );
 
   await wallet.close();
 });

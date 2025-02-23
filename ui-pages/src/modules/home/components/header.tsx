@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
+import { CardanoWallet } from '@/packages/midnight-react';
 import { useSubscriptions } from '@/packages/midnight-contracts/token/hooks/use-subscriptions';
 import { toast } from 'sonner';
 import { useProviders } from '@/packages/midnight-contracts/token';
@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 export const Header = () => {
   const providers = useProviders();
-  const { deployedAPI, turnsState } = useSubscriptions();
+  const { deployedAPI, derivedState } = useSubscriptions();
 
   const mint = () => {
     if (deployedAPI) {
@@ -18,13 +18,13 @@ export const Header = () => {
 
   useEffect(() => {
     toast.dismiss(); // Remove previous messages
-    if (turnsState?.mint === 'minting') {
+    if (derivedState?.userAction?.action === 'minting') {
       toast.info('minting');      
     }
-    if (turnsState?.mint === 'minting-done') {
+    if (derivedState?.userAction?.action === 'minting-done') {
       toast.info('minting-done');      
     }
-  }, [turnsState?.mint]);
+  }, [derivedState]);
 
   useEffect(() => {
     if (providers?.flowMessage) {
