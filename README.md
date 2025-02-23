@@ -77,9 +77,10 @@ Midnight structure:
         - yarn build
         - yarn environment
     3. Run the UI. At the /ui-pages level, run:
-        - Create a .env file (reference .env.example). Key for the Postgress database will be created automatically. Key for your Blockfrost needs to be inserted. Token smart contract address was created when "yarn environment was executed". 
+        - Create a .env file (reference .env.example). Key for the Postgress database will be created automatically. Key for your Blockfrost needs to be inserted (OPTIONAL). Token smart contract address was created when "yarn environment was executed". 
         - yarn dev
         - yarn db:init
+        - yarn ngrok:init (OPTIONAL, need to install NGROK and update your NGROK domain on package.json)
 
 ## Need to be installed
     - docker --version

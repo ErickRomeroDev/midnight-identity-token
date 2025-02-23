@@ -14,7 +14,7 @@
     "compact": "turbo run compact",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "environment": "turbo run prepare-local-env --filter=token-api"    
+    "environment": "turbo run prepare-local-env --filter=token-api"
   },
   "resolutions": {
     "@midnight-ntwrk/compact-runtime/@midnight-ntwrk/onchain-runtime": "0.2.2",

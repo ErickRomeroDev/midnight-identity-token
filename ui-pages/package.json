@@ -6,7 +6,8 @@
     "copy-bboard-keys": "mkdir -p ./public/midnight/bboard/keys && mkdir -p ./public/midnight/bboard/zkir && cp -r ../bboard-contract/dist/managed/bboard/keys/* ./public/midnight/bboard/keys && cp -r ../bboard-contract/dist/managed/bboard/zkir/* ./public/midnight/bboard/zkir",
     "copy-token-keys": "mkdir -p ./public/midnight/token/keys && mkdir -p ./public/midnight/token/zkir && cp -r ../token-contract/dist/managed/token/keys/* ./public/midnight/token/keys && cp -r ../token-contract/dist/managed/token/zkir/* ./public/midnight/token/zkir",
     "copy-auction-keys": "mkdir -p ./public/midnight/auction/keys && mkdir -p ./public/midnight/auction/zkir && cp -r ../auction-contract/dist/managed/auction/keys/* ./public/midnight/auction/keys && cp -r ../auction-contract/dist/managed/auction/zkir/* ./public/midnight/auction/zkir",
-    "dev": "yarn copy-bboard-keys && yarn copy-token-keys && yarn copy-auction-keys && bash ./start-database.sh && next dev",    
+    "dev": "yarn copy-bboard-keys && yarn copy-token-keys && yarn copy-auction-keys && bash ./start-database.sh && next dev",
+    "dev:all": "concurrently \"yarn ngrok:init\" \"yarn dev\" ",
     "build:ui": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -15,7 +16,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "bun src/scripts/seed-categories.ts"
+    "db:seed": "bun src/scripts/seed-categories.ts",
+    "ngrok:init": "ngrok http --url=phoenix-exciting-monkfish.ngrok-free.app 3000"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.0.0",
@@ -61,6 +63,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
+    "concurrently": "^9.1.2",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
