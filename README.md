@@ -75,6 +75,7 @@ Midnight structure:
     2. Build the repo and initialize Midnight instances. At the root level, run:
         - yarn
         - yarn build
+        - Open your Docker engine
         - yarn environment
     3. Run the UI. At the /ui-pages level, run:
         - Create a .env file (reference .env.example). Key for the Postgress database will be created automatically. Key for your Blockfrost needs to be inserted (OPTIONAL). Token smart contract address was created when "yarn environment was executed". 
