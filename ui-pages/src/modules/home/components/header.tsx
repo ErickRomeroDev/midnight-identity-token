@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { CardanoWallet } from '@/packages/midnight-react';
-import { useSubscriptions } from '@/packages/midnight-contracts/token/hooks/use-subscriptions';
+import { useSubscriptions } from '@/modules/midnight-contracts/token/hooks/use-subscriptions';
 import { toast } from 'sonner';
 import { useProviders } from '@/packages/midnight-contracts/token';
 import { useEffect } from 'react';
@@ -16,21 +16,20 @@ export const Header = () => {
     }
   };
 
-  useEffect(() => {
-    toast.dismiss(); // Remove previous messages
+  useEffect(() => {    
     if (derivedState?.userAction?.action === 'minting') {
-      toast.info('minting');      
+      toast.info('minting');
     }
     if (derivedState?.userAction?.action === 'minting-done') {
-      toast.info('minting-done');      
+      toast.dismiss(); // Remove previous messages
+      toast.info('minting-done');
     }
-  }, [derivedState]);
+  }, [derivedState?.userAction.action]);
 
   useEffect(() => {
-    if (providers?.flowMessage) {
-      toast.dismiss(); // Remove previous messages
+    if (providers?.flowMessage) {      
       toast.info(providers.flowMessage, {
-        id: 'flowMessageToast',  // Use a fixed ID to avoid duplicates
+        id: 'flowMessageToast', // Use a fixed ID to avoid duplicates
         duration: Infinity,
       });
     }

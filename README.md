@@ -64,10 +64,15 @@ Midnight structure:
 
 ## Findings or Improvements
 
-- Situation where phase1 passes but phase2 fails:
-    1. merge_coin can be used alongside a CoinInfo and Write_coin
-    2. sizes of circuits
-    3. Phase1 only takes in consideration private States, and logic from coins received from circuits. The testing framework does not consider ZswapCoinPks for users since they are filled with zeros for all cases, and Zswap coin balances.
+1. Scenario: Phase 1 Succeeds but Phase 2 Fails
+
+    - merge_coin Functionality: When using merge_coin together with CoinInfo and Write_coin, the Phase 1 test passes, but Phase 2 fails.
+    - Circuit Sizes: Phase1 does not take this in consideration.
+    - Testing Framework Limitations: Phase 1 only considers private states and the logic derived from coins received through circuits. The testing framework does not account for ZswapCoinPks (which are populated with zeros in every case) and does not track any Zswap coin balances.
+
+2. Scenario: Coins Lost or Not Tracked by the Wallet
+
+    - If the Kachina proof is generated and the transaction is signed, an immediate browser refresh causes the wallet to lose track of coin balances. However, if you wait until both proofs (Kachina and Zwap) are generated, this issue does not occur.
 
 ## Procedure to intialize
     1. Initialize Variables
@@ -75,6 +80,7 @@ Midnight structure:
     2. Build the repo and initialize Midnight instances. At the root level, run:
         - yarn
         - yarn build
+        - Open your Docker engine
         - yarn environment
     3. Run the UI. At the /ui-pages level, run:
         - Create a .env file (reference .env.example). Key for the Postgress database will be created automatically. Key for your Blockfrost needs to be inserted (OPTIONAL). Token smart contract address was created when "yarn environment was executed". 
