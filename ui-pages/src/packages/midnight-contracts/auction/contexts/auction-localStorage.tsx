@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, useMemo } from 'react';
 import { type Logger } from 'pino';
 import { LocalStorage, LocalStorageProps } from './auction-localStorage-class';
 
@@ -10,5 +10,11 @@ export interface LocalStorageProviderProps {
 }
 
 export const LocalStorageProvider = ({ children, logger }: LocalStorageProviderProps) => {
-  return <LocalStorageContext.Provider value={new LocalStorage(logger)}>{children}</LocalStorageContext.Provider>;
+  const localStorageInstance = useMemo(() => new LocalStorage(logger), [logger]);
+
+  return (
+    <LocalStorageContext.Provider value={localStorageInstance}>
+      {children}
+    </LocalStorageContext.Provider>
+  );
 };
