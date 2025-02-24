@@ -30,10 +30,11 @@ export const Header = () => {
     if (providers?.flowMessage) {
       toast.dismiss(); // Remove previous messages
       toast.info(providers.flowMessage, {
-        duration: Infinity, // Keep the toast visible
+        id: 'flowMessageToast',  // Use a fixed ID to avoid duplicates
+        duration: Infinity,
       });
     }
-  }, [providers]);
+  }, [providers?.flowMessage]);
 
   return (
     <div className="inset-0 fixed z-50 flex items-center justify-between h-[70px] px-12 bg-[#FAFAFA]">
