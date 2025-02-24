@@ -1,18 +1,17 @@
 import { useProviders } from '@/packages/midnight-contracts/token';
-import { useSubscriptions } from '@/packages/midnight-contracts/token/hooks/use-subscriptions';
+import { useSubscriptions } from '@/modules/midnight-contracts/token/hooks/use-subscriptions';
 import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
-
 
 const Page = () => {
   const { address, coinPublicKey, encryptionPublicKey, walletName, hasConnectedWallet, isProofServerOnline } = useAssets();
   const { setOpen, disconnect } = useWallet();
 
   const providers = useProviders();
-  const { tokenDeployment, deployedAPI, derivedState } = useSubscriptions();  
+  const { tokenDeployment, deployedAPI, derivedState } = useSubscriptions();
 
   console.log({ tokenDeployment });
   console.log({ deployedAPI });
-  console.log({ derivedState });  
+  console.log({ derivedState });
 
   const mint = () => {
     if (deployedAPI) {
@@ -21,7 +20,7 @@ const Page = () => {
   };
 
   return (
-    <div className="flex flex-col text-white">
+    <div className="flex flex-col text-white pt-40">
       <CardanoWallet />
       <div>Address: {address}</div>
       <div>Coin PublicKey: {coinPublicKey}</div>

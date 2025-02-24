@@ -110,8 +110,7 @@ export class DeployedTemplateManager implements DeployedAPIProvider {
   ): Promise<string | undefined> {
     try {
       if (this.providers) {
-        const uuid: string = crypto.randomUUID();
-        console.log({ uuid, Address: this.tokenContractAddress, providers: this.providers, logger: this.logger });
+        const uuid: string = crypto.randomUUID();        
         const api = await API.deploy(
           uuid,
           this.tokenContractAddress,
@@ -122,8 +121,7 @@ export class DeployedTemplateManager implements DeployedAPIProvider {
           estimated_value,
           deadline,
           image,
-        );
-        console.log('api apos o deploy', api);
+        );        
         this.localState.setContractPrivateId(uuid, api.deployedContractAddress);
         this.localState.addContract(api.deployedContractAddress);
 
