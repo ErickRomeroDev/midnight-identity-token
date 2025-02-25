@@ -7,33 +7,33 @@ import { useProviders } from '@/packages/midnight-contracts/token';
 import { useEffect } from 'react';
 
 export const Header = () => {
-  const providers = useProviders();
-  const { deployedAPI, derivedState } = useSubscriptions();
+  // const providers = useProviders();
+  // const { deployedAPI, derivedState } = useSubscriptions();
 
-  const mint = () => {
-    if (deployedAPI) {
-      deployedAPI.mint();
-    }
-  };
+  // const mint = () => {
+  //   if (deployedAPI) {
+  //     deployedAPI.mint();
+  //   }
+  // };
 
-  useEffect(() => {    
-    if (derivedState?.userAction?.action === 'minting') {
-      toast.info('minting');
-    }
-    if (derivedState?.userAction?.action === 'minting-done') {
-      toast.dismiss(); // Remove previous messages
-      toast.info('minting-done');
-    }
-  }, [derivedState?.userAction.action]);
+  // useEffect(() => {
+  //   if (derivedState?.userAction?.action === 'minting') {
+  //     toast.info('minting');
+  //   }
+  //   if (derivedState?.userAction?.action === 'minting-done') {
+  //     toast.dismiss(); // Remove previous messages
+  //     toast.info('minting-done');
+  //   }
+  // }, [derivedState?.userAction.action]);
 
-  useEffect(() => {
-    if (providers?.flowMessage) {      
-      toast.info(providers.flowMessage, {
-        id: 'flowMessageToast', // Use a fixed ID to avoid duplicates
-        duration: Infinity,
-      });
-    }
-  }, [providers?.flowMessage]);
+  // useEffect(() => {
+  //   if (providers?.flowMessage) {
+  //     toast.info(providers.flowMessage, {
+  //       id: 'flowMessageToast', // Use a fixed ID to avoid duplicates
+  //       duration: Infinity,
+  //     });
+  //   }
+  // }, [providers?.flowMessage]);
 
   return (
     <div className="inset-0 fixed z-50 flex items-center justify-between h-[70px] px-12 bg-[#FAFAFA]">
@@ -55,7 +55,7 @@ export const Header = () => {
           <button className="hover:text-[#D28C13]">Auctions</button>
         </Link>
 
-        <button onClick={mint} className="hover:text-[#D28C13]">
+        <button onClick={() => {}} className="hover:text-[#D28C13]">
           Mint tBID
         </button>
 

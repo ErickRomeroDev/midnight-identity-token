@@ -48,7 +48,7 @@ export const AuctionModal = ({ openDialog, setOpenDialog, index }: AuctionModalP
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values)
+      console.log(values);
       form.reset();
     } catch {}
   };
@@ -127,5 +127,3 @@ export const AuctionModal = ({ openDialog, setOpenDialog, index }: AuctionModalP
     </>
   );
 };
-
-//open={openDialog}

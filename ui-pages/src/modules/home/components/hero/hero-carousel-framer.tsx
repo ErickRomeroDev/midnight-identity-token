@@ -13,7 +13,7 @@ export const HeroCarouselFramer = () => {
         whileDrag={{ cursor: "grabbing" }}
         className="flex h-full w-fit gap-x-4 cursor-grab "
       >
-        <div className="relative w-full rounded-[10px] aspect-square overflow-hidden">
+        <div className="relative w-full rounded-[5px] aspect-square overflow-hidden">
           <Image
             className="h-full w-full pointer-events-none  object-cover "
             src="/sample-1.jpg"
@@ -22,7 +22,7 @@ export const HeroCarouselFramer = () => {
             height={500}
           />
         </div>
-        <div className="relative w-full rounded-[10px] aspect-square overflow-hidden">
+        <div className="relative w-full rounded-[5px] aspect-square overflow-hidden">
           <Image
             className="pointer-events-none h-full w-full object-cover "
             src="/sample-3.jpg"
@@ -31,7 +31,7 @@ export const HeroCarouselFramer = () => {
             height={500}
           />
         </div>
-        <div className="relative w-full rounded-[10px] aspect-square overflow-hidden ">
+        <div className="relative w-full rounded-[5px] aspect-square overflow-hidden ">
           <Image
             className="pointer-events-none h-full w-full object-cover "
             src="/sample-2.jpg"
@@ -40,7 +40,7 @@ export const HeroCarouselFramer = () => {
             height={500}
           />
         </div>
-        <div className="relative w-full rounded-[10px] aspect-square overflow-hidden ">
+        <div className="relative w-full rounded-[5px] aspect-square overflow-hidden ">
           <Image
             className="pointer-events-none h-full w-full object-cover "
             src="/sample-1.jpg"
