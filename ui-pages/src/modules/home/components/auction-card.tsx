@@ -10,8 +10,8 @@ type SimplifiedAuction = Pick<
 >;
 
 interface AuctionCardProps extends SimplifiedAuction {
-  setIndex: (index: number) => void;
-  index: number;
+  setIndex: (index: number | undefined) => void;
+  index: number | undefined;
   setOpenDialog: (open: boolean) => void;
 }
 

@@ -3,25 +3,25 @@ import { useSubscriptions } from '@/modules/midnight-contracts/token/hooks/use-s
 import { CardanoWallet, useAssets, useWallet } from '@/packages/midnight-react';
 
 const Page = () => {
-  const { address, coinPublicKey, encryptionPublicKey, walletName, hasConnectedWallet, isProofServerOnline } = useAssets();
-  const { setOpen, disconnect } = useWallet();
+  // const { address, coinPublicKey, encryptionPublicKey, walletName, hasConnectedWallet, isProofServerOnline } = useAssets();
+  // const { setOpen, disconnect } = useWallet();
 
-  const providers = useProviders();
-  const { tokenDeployment, deployedAPI, derivedState } = useSubscriptions();
+  // const providers = useProviders();
+  // const { tokenDeployment, deployedAPI, derivedState } = useSubscriptions();
 
-  console.log({ tokenDeployment });
-  console.log({ deployedAPI });
-  console.log({ derivedState });
+  // console.log({ tokenDeployment });
+  // console.log({ deployedAPI });
+  // console.log({ derivedState });
 
-  const mint = () => {
-    if (deployedAPI) {
-      deployedAPI.mint();
-    }
-  };
+  // const mint = () => {
+  //   if (deployedAPI) {
+  //     deployedAPI.mint();
+  //   }
+  // };
 
   return (
     <div className="flex flex-col text-white pt-40">
-      <CardanoWallet />
+      {/* <CardanoWallet />
       <div>Address: {address}</div>
       <div>Coin PublicKey: {coinPublicKey}</div>
       <div>Encryption PublicKey: {encryptionPublicKey}</div>
@@ -37,7 +37,7 @@ const Page = () => {
       <div onClick={mint} className="cursor-pointer">
         Mint Token
       </div>
-      <div>Message: {providers && providers.flowMessage}</div>
+      <div>Message: {providers && providers.flowMessage}</div> */}
     </div>
   );
 };

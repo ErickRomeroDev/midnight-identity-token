@@ -1,13 +1,8 @@
 import Head from 'next/head';
 import { Hero } from '@/modules/home/components/hero';
 import { Register } from '@/modules/home/components/register';
-import { useProviders } from '@/packages/midnight-contracts/token';
-import { useSubscriptions } from '@/modules/midnight-contracts/token/hooks/use-subscriptions';
-import { useEffect } from 'react';
 
 const Page = () => {
-  const providers = useProviders();
-
   return (
     <>
       <Head>
@@ -18,8 +13,6 @@ const Page = () => {
       <main className="h-[calc(100vh-70px)] font-[family-name:var(--font-ibm-plex-sans)]">
         <div className="h-full mt-[70px] overflow-y-scroll">
           <Hero />
-          <div className="text-white">Message: {providers && providers.flowMessage}</div>
-
           <Register />
         </div>
       </main>
