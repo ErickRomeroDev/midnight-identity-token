@@ -22,7 +22,19 @@ import {
 } from '@meshsdk/auction-contract';
 import * as utils from './utils/index.js';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
-import { BehaviorSubject, combineLatest, concat, defer, from, map, type Observable, of, retry, scan, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  concat,
+  defer,
+  from,
+  map,
+  type Observable,
+  of,
+  retry,
+  scan,
+  Subject,
+} from 'rxjs';
 import { toHex } from '@midnight-ntwrk/midnight-js-utils';
 import type { PrivateStateProvider } from '@midnight-ntwrk/midnight-js-types/dist/private-state-provider';
 import { encodeTokenType } from '@midnight-ntwrk/onchain-runtime';
@@ -33,7 +45,7 @@ const contractInstance: ContractInstance = new Contract(witnesses);
 
 export interface DeployedAPI {
   readonly deployedContractAddress: ContractAddress;
-  readonly state$: Observable<DerivedState>;  
+  readonly state$: Observable<DerivedState>;
 
   start_bid: () => Promise<void>;
   close_bid: () => Promise<void>;
@@ -55,12 +67,13 @@ export class API implements DeployedAPI {
         state: value.state,
         whoami: value.whoami,
         registered: value.registered,
+        confirmed: value.confirmed,
         userAction: value.userAction,
       };
     };
     this.deployedContractAddress = deployedContract.deployTxData.public.contractAddress;
     this.turns$ = new BehaviorSubject<UserAction>({
-      action: undefined,      
+      action: undefined,
       error: undefined,
     });
     this.privateStates$ = new Subject<PrivateState>();
@@ -73,22 +86,34 @@ export class API implements DeployedAPI {
           from(defer(() => providers.privateStateProvider.get(contractPrivateId) as Promise<PrivateState>)),
           this.privateStates$,
         ),
-        this.turns$ 
+        this.turns$,
       ],
       (ledgerState, privateState, userAction) => {
         const whoami = pureCircuits.registration_hash(privateState.certificate);
         let maybeKeys: Maybe<Uint8Array>[] = [];
-        for (const [key, value] of ledgerState.registeredHashes) {          
-          maybeKeys.push({
-            is_some: true,
-            value: key,
-          });
-        }       
+        for (const [key, value] of ledgerState.registeredHashes) {
+          if (value === false) {
+            maybeKeys.push({
+              is_some: true,
+              value: key,
+            });
+          }
+        }
+        let maybeKeysConfirmed: Maybe<Uint8Array>[] = [];
+        for (const [key, value] of ledgerState.registeredHashes) {
+          if (value === true) {
+            maybeKeysConfirmed.push({
+              is_some: true,
+              value: key,
+            });
+          }
+        }
         const result: DerivedState = {
           state: ledgerState.state,
           whoami: toHex(whoami),
           registered: maybeKeys,
-          userAction
+          confirmed: maybeKeysConfirmed,
+          userAction,
         };
         return result;
       },

@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import React, { createContext } from 'react';
+import React, { createContext, useMemo } from 'react';
 import { type Logger } from 'pino';
 
 import type { DeployedAPIProvider } from './auction-deployment-class';
@@ -18,10 +18,12 @@ export type DeployedProviderProps = PropsWithChildren<{
 export const DeployedProvider = ({ logger, TOKEN_ADDRESS, children }: DeployedProviderProps) => {
   const localState = useLocalState();
   const providers = useProviders();
+  const manager = useMemo(() => {
+    return new DeployedTemplateManager(logger, localState, TOKEN_ADDRESS, providers?.providers);
+  }, [logger, localState, TOKEN_ADDRESS, providers?.providers]);
+
   return (
-    <DeployedProviderContext.Provider
-      value={new DeployedTemplateManager(logger, localState, TOKEN_ADDRESS, providers?.providers)}
-    >
+    <DeployedProviderContext.Provider value={manager}>
       {children}
     </DeployedProviderContext.Provider>
   );

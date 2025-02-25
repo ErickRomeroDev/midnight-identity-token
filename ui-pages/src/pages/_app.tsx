@@ -4,6 +4,7 @@ import { setNetworkId, type NetworkId } from '@midnight-ntwrk/midnight-js-networ
 import * as pino from 'pino';
 // import { AppProvider as BboardAppProvider  } from '@/packages/midnight-contracts/bboard';
 import { AppProvider as TokenAppProvider } from '@/packages/midnight-contracts/token';
+import { AppProvider as AuctionAppProvider } from '@/packages/midnight-contracts/auction';
 import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import '@/styles/globals.css';
 import { EB_Garamond, IBM_Plex_Sans } from 'next/font/google';
@@ -38,11 +39,13 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     <MeshProvider>
       <MidnightMeshProvider logger={logger}>
         <TokenAppProvider logger={logger} TOKEN_ADDRESS={TOKEN_ADDRESS}>
-          <div className={`${ibmPlexSans.variable} ${ebGaramond.variable} font-[family-name:var(--font-ibm-plex-sans)]`}>
-            <Header />
-            <Toaster />
-            <Component {...pageProps} />
-          </div>
+          <AuctionAppProvider logger={logger} TOKEN_ADDRESS={TOKEN_ADDRESS}>
+            <div className={`${ibmPlexSans.variable} ${ebGaramond.variable} font-[family-name:var(--font-ibm-plex-sans)]`}>
+              <Header />
+              <Toaster />
+              <Component {...pageProps} />
+            </div>
+          </AuctionAppProvider>
         </TokenAppProvider>
       </MidnightMeshProvider>
     </MeshProvider>

@@ -26,7 +26,8 @@ export type UserAction = {
 export type DerivedState = {
   readonly state: STATE;  
   readonly whoami: string;  
-  readonly registered: Maybe<Uint8Array>[]  
+  readonly registered: Maybe<Uint8Array>[] 
+  readonly confirmed: Maybe<Uint8Array>[]  
   userAction: UserAction
 };
 
@@ -34,6 +35,7 @@ export const emptyState: DerivedState = {
   state: STATE.open, 
   whoami: 'unknown',  
   registered: [],
+  confirmed: [],
   userAction: { action: undefined, error: undefined }
 };
 
