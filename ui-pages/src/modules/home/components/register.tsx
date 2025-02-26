@@ -22,11 +22,12 @@ export const Register = () => {
                 </h2>
                 <div className="leading-[22px]">
                   <p>
-                    Connect your wallet and submit your certificate hash &
-                    issuer name.
+                    Connect your wallet and submit your certificate hash. Your compliance will be automatically
+                    enforced through zero-knowledge proofs, ensuring privacy and
+                    security.
                   </p>
                   <p>
-                    We will validate your compliance without collecting any
+                    We will validate your Certificate hash without collecting any
                     private information.
                   </p>
                 </div>
@@ -42,14 +43,14 @@ export const Register = () => {
                 </h2>
                 <div className="leading-[22px] ">
                   <p>
-                    Once your certificate is verified, you're free to join
+                    Once your certificate is verified, you can participate in
                     auctions.
                   </p>
-                  <p>
+                  {/* <p>
                     Before every bid, your compliance will be automatically
                     enforced through zero-knowledge proofs, ensuring privacy and
                     security.
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -83,8 +84,8 @@ export const Register = () => {
                     <Image src="check.svg" alt="check" width={12} height={12} />
                   </div>
                   <div className="flex flex-col">
-                    <span>Proof of Funds:</span>
-                    <span>Verification of financial capability.</span>
+                    <span>Proof of ownership:</span>
+                    <span>Verification of certification provenance.</span>
                   </div>
                 </div>
                 <div className="flex gap-x-3">

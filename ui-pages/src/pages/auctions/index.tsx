@@ -30,27 +30,26 @@ const Auctions = () => {
       <div className="border">Search bar</div>
 
       <div className="flex flex-col items-center space-y-16 h-[60%] w-full overflow-y-auto snap-y snap-mandatory border border-pink-400 pt-16">
-        
-          {chunkedData.map((group, rowIndex) => (
-            <div key={rowIndex} className=" snap-center">
-              <div className='grid grid-cols-3 gap-x-10'>
-                {group.map((item) => (
-                  <AuctionCard
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    description={item.description}
-                    imageUrl={item.imageUrl}
-                    estimate={item.estimate}
-                    index={index}
-                    setIndex={setIndex}
-                    setOpenDialog={setOpenDialog}
-                  />
-                ))}
-              </div>
+        {chunkedData.map((group, rowIndex) => (
+          <div key={rowIndex} className=" snap-center">
+            <div className="grid grid-cols-3 gap-x-10">
+              {group.map((item, colIndex) => (
+                <AuctionCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  description={item.description}
+                  imageUrl={item.imageUrl}
+                  estimate={item.estimate}
+                  index={rowIndex * colIndex}
+                  setIndex={setIndex}
+                  setOpenDialog={setOpenDialog}
+                />
+              ))}
             </div>
-          ))}
-       
+          </div>
+        ))}
+
         <div className="h-20" />
       </div>
 

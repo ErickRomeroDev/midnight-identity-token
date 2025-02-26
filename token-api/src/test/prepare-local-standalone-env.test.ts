@@ -10,7 +10,7 @@ import { ContractAddress } from '@midnight-ntwrk/compact-runtime';
 import * as utils from '../utils/index.js';
 import { API, type Providers } from '../index';
 
-const my_own_wallet = '1ddf9400a719ebe1fb022aff0ed1b4f3feed7abcc94138d5d6b0523450b4c70b|03001a5e065fd1710ad50ff81f25ac2baa8f76dfe957a7570e3982a31d3d0f9e58e80e2f6bb0ee20dd38991d7217aa4ef2b5526e5fd8d6f43409'
+const my_own_wallet = '5feff6534cae3d59e03275b299f2cd052e02e2084cfd63c4fff2568971c1343e|0300aa6a2d2ed980354bc5f14d595e6b6d8bd740bb99e9115c167c357e2b52865cb808f54d5ce551b5d79df33bb3878baaba5aa8a1be4d510b88'
 const logDir = path.resolve(currentDir, '..', 'logs', 'tests', `${new Date().toISOString()}.log`);
 const logger = await createLogger(logDir);
 
@@ -25,6 +25,7 @@ let wallet: Wallet & Resource;
 let providers1: Providers;
 let owner: API;
 let tokenAddress: ContractAddress;
+let keepAliveInterval: any;
 
 beforeAll(async () => {
   testEnvironment = new TestEnvironment(logger);
@@ -38,11 +39,16 @@ beforeAll(async () => {
   console.log("fase3")
   tokenAddress = owner.deployedContractAddress;
   logger.info({tokenAddress});
+
+  keepAliveInterval = setInterval(() => {
+    console.log('Keeping container alive...');
+  }, 60000); // every 60 seconds
 });
 
 afterAll(async () => {
   try {
     // await testEnvironment.shutdown();
+    clearInterval(keepAliveInterval);
     await new Promise(() => {});
   } catch (e) {
     // ignore

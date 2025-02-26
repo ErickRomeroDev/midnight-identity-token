@@ -29,12 +29,6 @@ interface AuctionModalProps {
 export const AuctionModal = ({ openDialog, setOpenDialog, index }: AuctionModalProps) => {
   const { data, isLoading } = api.getTable.getMany.useQuery();
 
-  if (isLoading || !data) {
-    return <div>Loading...</div>;
-  }
-
-  const item = data[index!];
-
   const formSchema = z.object({
     name: z.coerce.number(),
   });
@@ -45,6 +39,12 @@ export const AuctionModal = ({ openDialog, setOpenDialog, index }: AuctionModalP
       name: 0,
     },
   });
+
+  if (isLoading || !data) {
+    return <div>Loading...</div>;
+  }
+
+  const item = data[index!];
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
