@@ -68,6 +68,8 @@ export class API implements DeployedAPI {
         whoami: value.whoami,
         registered: value.registered,
         confirmed: value.confirmed,
+        owner: value.owner,
+        info: value.info,
         userAction: value.userAction,
       };
     };
@@ -113,6 +115,8 @@ export class API implements DeployedAPI {
           whoami: toHex(whoami),
           registered: maybeKeys,
           confirmed: maybeKeysConfirmed,
+          owner: ledgerState.adminPublicKey,
+          info: {title: ledgerState.title, description: ledgerState.description, minBid: ledgerState.estimatedValue, deadline: ledgerState.deadline, image: ledgerState.image},
           userAction,
         };
         return result;
