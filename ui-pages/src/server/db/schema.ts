@@ -8,8 +8,7 @@ import {
   timestamp,
   varchar,
   text,
-  pgTable,
-  check,
+  pgTable, 
   pgEnum,
 } from "drizzle-orm/pg-core";
 
@@ -45,5 +44,22 @@ export const auctions = pgTable(
   },
   (example) => ({
     nameIndex: index("title_idx").on(example.title),
+  }),
+);
+
+export const auctionsSmartContracts = pgTable(
+  "auctions-smartContracts",
+  {
+    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),    
+    smartContract: text("smartContract").notNull(),    
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date(),
+    ),
+  },
+  (example) => ({
+    nameIndex: index("smartContract_idx").on(example.smartContract),
   }),
 );

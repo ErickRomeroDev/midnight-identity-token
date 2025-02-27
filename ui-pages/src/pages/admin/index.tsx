@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useAuctionContractsSubscriptions } from '@/modules/midnight-contracts/auction/hooks/use-contracts-subscriptions';
 import { ContractPage } from '@/modules/home/components/admin-contracts';
+import { api } from '@/utils/api';
 
 const Admin = () => {
   const deploy = useDeployedContracts();
@@ -17,6 +18,7 @@ const Admin = () => {
   const [deploymentStatus, setDeploymentStatus] = useState<'deploying' | 'deploying-done' | 'deploying-error' | undefined>(
     undefined,
   );
+  const { mutate } = api.postTable.postSmartContract.useMutation();
 
   useEffect(() => {
     if (deploymentStatus === 'deploying') {
@@ -60,7 +62,7 @@ const Admin = () => {
     try {
       if (deploy) {
         setDeploymentStatus('deploying');
-        await deploy.deployAndAddContract(
+        const contract = await deploy.deployAndAddContract(
           'recent',
           values.title,
           values.description,
@@ -69,8 +71,12 @@ const Admin = () => {
           values.image,
         );
         setDeploymentStatus('deploying-done');
-      }      
-      form.reset();      
+        if (contract.address) {
+          mutate({ smartContract: contract.address });
+        }
+        console.log('smart contract Address', contract.address);
+      }
+      form.reset();
       auctionContractDeployments_refresh();
     } catch {
       setDeploymentStatus('deploying-error');
@@ -169,5 +175,3 @@ const Admin = () => {
   );
 };
 export default Admin;
-
-
