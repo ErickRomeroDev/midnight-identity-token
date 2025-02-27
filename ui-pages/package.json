@@ -11,7 +11,7 @@
     "build:ui": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:init": "yarn db:push && yarn db:seed",
+    "db:init": "yarn db:push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",

@@ -1,7 +1,8 @@
-import { AuctionCard } from '@/modules/home/components/auction-card';
-import { AuctionModal } from '@/modules/home/components/auction-modal';
+import { AuctionSmartContractCard } from '@/modules/home/components/auction-smartContract-card';
+import { AuctionSmartContractModal } from '@/modules/home/components/auction-smartContract-modal';
+import { ContractState, useDeployedContracts } from '@/packages/midnight-contracts/auction';
 import { api } from '@/utils/api';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const chunkArray = <T,>(arr: T[], size: number): T[][] => {
   return arr.reduce((acc: T[][], _, i) => {
@@ -12,20 +13,47 @@ const chunkArray = <T,>(arr: T[], size: number): T[][] => {
 
 const Auctions = () => {
   const [openDialog, setOpenDialog] = useState(false);
-
   const [index, setIndex] = useState<number | undefined>(undefined);
-
   const { data, isLoading } = api.getTable.getMany.useQuery();
+  const { data: dataSmartContracts, isLoading: isLoadingSmartContracts } = api.getTable.getSmartContracts.useQuery();
+  const deploy = useDeployedContracts();
+  const [auctionContractDeployments, setAuctionContractDeployments] = useState<ContractState[]>([]);
+
+  const auctionContractDeployments_refresh = useCallback(() => {
+    if (dataSmartContracts) {
+      dataSmartContracts.forEach((item) => {
+        deploy.addContract('recent', item.smartContract);
+      });
+      const subscription = deploy.contractDeployments$.subscribe((newDeployments) => {
+        console.log('New contract deployments received:', newDeployments);
+        setAuctionContractDeployments(newDeployments);
+      });
+      return subscription;
+    }
+  }, [deploy, dataSmartContracts]);
+
+  useEffect(() => {
+    const subscription = auctionContractDeployments_refresh();
+    if (subscription) {
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [auctionContractDeployments_refresh]);
 
   if (isLoading || !data) {
     return <div>Loading...</div>;
   }
 
-  const chunkedData = chunkArray(data, 3);
+  if (isLoadingSmartContracts || !dataSmartContracts) {
+    return <div>Loading...</div>;
+  }
+
+  const chunkedData = chunkArray(auctionContractDeployments, 3);
 
   return (
     <div className="relative flex flex-col h-[calc(100vh-70px)] justify-center mt-[70px]">
-      <AuctionModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} />
+      <AuctionSmartContractModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} contracts={auctionContractDeployments} />
       <div className="absolute bottom-0 -z-10 h-[45%] w-full bg-[#3E4858]" />
       <div className="border">Search bar</div>
 
@@ -34,14 +62,10 @@ const Auctions = () => {
           <div key={rowIndex} className=" snap-center">
             <div className="grid grid-cols-3 gap-x-10">
               {group.map((item, colIndex) => (
-                <AuctionCard
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  description={item.description}
-                  imageUrl={item.imageUrl}
-                  estimate={item.estimate}
-                  index={rowIndex * colIndex}
+                <AuctionSmartContractCard
+                  key={rowIndex * colIndex + colIndex}                  
+                  contract={item}
+                  index={rowIndex * colIndex + colIndex}
                   setIndex={setIndex}
                   setOpenDialog={setOpenDialog}
                 />
@@ -52,25 +76,6 @@ const Auctions = () => {
 
         <div className="h-20" />
       </div>
-
-      {/* <div className="flex flex-col items-center h-[60%] w-full overflow-y-auto border border-pink-400 pt-16">
-        <div className="w-fit grid grid-cols-3 gap-x-10 gap-y-16 ">
-          {data.map((item, index) => (
-            <AuctionCard
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              description={item.description}
-              imageUrl={item.imageUrl}
-              estimate={item.estimate}
-              index={index}
-              setIndex={setIndex}
-              setOpenDialog={setOpenDialog}
-            />
-          ))}
-        </div>
-        <div className="h-20"/>
-      </div> */}
     </div>
   );
 };

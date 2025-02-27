@@ -11,18 +11,18 @@ import { toHex } from '@midnight-ntwrk/midnight-js-utils';
 import { encodeCoinPublicKey } from '@midnight-ntwrk/compact-runtime';
 import { useAssets } from '@/packages/midnight-react';
 
-export const useAuctionContractSubscription = (contractStates: ContractState) => {
+export const useAuctionContractSubscription = (contractStates?: ContractState) => {
   const [contractDeployment, setContractDeployment] = useState<ContractDeployment>();
   const [deployedContractAPI, setDeployedContractAPI] = useState<DeployedAPI>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [contractState, setContractState] = useState<DerivedState>();
-  const [isLoading, setIsLoading] = useState(!!contractStates.observable);
+  const [isLoading, setIsLoading] = useState(!!contractStates?.observable);
   const { coinPublicKey } = useAssets();
   const providersAuction = useProvidersAuction();
   const localStorage = useLocalState();
 
   useEffect(() => {
-    if (!contractStates.observable) {
+    if (!contractStates?.observable) {
       return;
     }
     const subscription = contractStates.observable.subscribe(setContractDeployment);
@@ -30,7 +30,7 @@ export const useAuctionContractSubscription = (contractStates: ContractState) =>
     return () => {
       subscription.unsubscribe();
     };
-  }, [contractStates.observable]);
+  }, [contractStates?.observable]);
 
   useEffect(() => {
     if (!contractDeployment) {
@@ -133,7 +133,7 @@ export const useAuctionContractSubscription = (contractStates: ContractState) =>
   };
 
   const set_myId1 = () => {
-    if (providersAuction && contractStates.address && coinPublicKey) {
+    if (providersAuction && contractStates?.address && coinPublicKey) {
       const p1certificate: Certificate = {
         age: 19n,
         aml: true,
@@ -149,7 +149,7 @@ export const useAuctionContractSubscription = (contractStates: ContractState) =>
   };
 
   const set_myId2 = () => {
-    if (providersAuction && contractStates.address && coinPublicKey) {
+    if (providersAuction && contractStates?.address && coinPublicKey) {
       const p1certificate: Certificate = {
         age: 17n,
         aml: true,
@@ -165,7 +165,7 @@ export const useAuctionContractSubscription = (contractStates: ContractState) =>
   };
 
   const set_myId3 = () => {
-    if (providersAuction && contractStates.address && coinPublicKey) {
+    if (providersAuction && contractStates?.address && coinPublicKey) {
       const p1certificate: Certificate = {
         age: 21n,
         aml: false,
@@ -181,7 +181,7 @@ export const useAuctionContractSubscription = (contractStates: ContractState) =>
   };
 
   const set_myId4 = () => {
-    if (providersAuction && contractStates.address && coinPublicKey) {
+    if (providersAuction && contractStates?.address && coinPublicKey) {
       const p1certificate: Certificate = {
         age: 19n,
         aml: true,
