@@ -2,7 +2,7 @@ import { HeroCarouselFramer } from "./hero-carousel-framer";
 
 export const Hero = () => {
   return (
-    <div className="h-full flex items-center">
+    <div className="h-full min-h-[calc(100vh-70px)] flex items-center">
       <div className="flex w-[35%] h-[580px] pl-28 text-white/80">
         <div className="flex flex-col h-full justify-between w-[310px] ">
           <h1 className="leading-none text-5xl font-[family-name:var(--font-eb-garamond)]">

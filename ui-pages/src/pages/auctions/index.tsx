@@ -1,5 +1,5 @@
-import { AuctionSmartContractCard } from '@/modules/home/components/auction-smartContract-card';
-import { AuctionSmartContractModal } from '@/modules/home/components/auction-smartContract-modal';
+import { AuctionCard } from '@/modules/home/components/auction-card';
+import { AuctionModal } from '@/modules/home/components/auction-modal';
 import { ContractState, useDeployedContracts } from '@/packages/midnight-contracts/auction';
 import { api } from '@/utils/api';
 import { useCallback, useEffect, useState } from 'react';
@@ -53,7 +53,7 @@ const Auctions = () => {
 
   return (
     <div className="relative flex flex-col h-[calc(100vh-70px)] justify-center mt-[70px]">
-      <AuctionSmartContractModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} contracts={auctionContractDeployments} />
+      <AuctionModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} contracts={auctionContractDeployments} />
       <div className="absolute bottom-0 -z-10 h-[45%] w-full bg-[#3E4858]" />
       <div className="border">Search bar</div>
 
@@ -62,7 +62,7 @@ const Auctions = () => {
           <div key={rowIndex} className=" snap-center">
             <div className="grid grid-cols-3 gap-x-10">
               {group.map((item, colIndex) => (
-                <AuctionSmartContractCard
+                <AuctionCard
                   key={rowIndex * colIndex + colIndex}                  
                   contract={item}
                   index={rowIndex * colIndex + colIndex}

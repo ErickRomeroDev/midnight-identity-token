@@ -70,6 +70,7 @@ export class API implements DeployedAPI {
         confirmed: value.confirmed,
         owner: value.owner,
         info: value.info,
+        highestBid: value.highestBid,
         userAction: value.userAction,
       };
     };
@@ -117,6 +118,7 @@ export class API implements DeployedAPI {
           confirmed: maybeKeysConfirmed,
           owner: ledgerState.adminPublicKey,
           info: {title: ledgerState.title, description: ledgerState.description, minBid: ledgerState.estimatedValue, deadline: ledgerState.deadline, image: ledgerState.image},
+          highestBid: ledgerState.highestBid, 
           userAction,
         };
         return result;

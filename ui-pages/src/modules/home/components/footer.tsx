@@ -27,10 +27,10 @@ export const Footer = () => {
             />
           </Link>
           <span>, powered by</span>
-          <Link href="https://www.eddalabs.io">
+          <Link href="https://meshjs.dev/">
             <Image
               src="/mesh-sdk-logo.svg"
-              alt="Edda Labs"
+              alt="Mesh.js"
               width={100}
               height={100}
             />

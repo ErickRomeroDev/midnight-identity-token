@@ -29,7 +29,8 @@ export type DerivedState = {
   readonly registered: Maybe<Uint8Array>[];
   readonly confirmed: Maybe<Uint8Array>[]; 
   readonly owner: { bytes: Uint8Array };
-  readonly info: {title: string, description: string, minBid: BigInt, deadline: string, image: string}
+  readonly info: {title: string, description: string, minBid: BigInt, deadline: string, image: string};
+  readonly highestBid: BigInt;
   userAction: UserAction
 };
 
@@ -40,6 +41,7 @@ export const emptyState: DerivedState = {
   confirmed: [],
   owner: { bytes: new Uint8Array(32) },
   info: {title: "", description: "", minBid: 0n, deadline: "", image: ""},
+  highestBid: 0n,
   userAction: { action: undefined, error: undefined }
 };
 
