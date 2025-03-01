@@ -1,11 +1,32 @@
 # Edda Labs - Auction Platform
 
+<div align="center">
+
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://meshjs.dev/logo-mesh/white/logo-mesh-white-512x512.png" width="200">
+    <source media="(prefers-color-scheme: light)" srcset="https://meshjs.dev/logo-mesh/black/logo-mesh-black-512x512.png" width="200">
+    <img alt="mesh logo" src="https://meshjs.dev/logo-mesh/mesh.png">
+  </picture>
+
+  <h1 style="border-bottom: none"><a href='https://meshjs.dev/'>Mesh</a> TypeScript SDK</h1>
+
+  [![Licence](https://img.shields.io/github/license/meshjs/mesh)](https://github.com/meshjs/mesh/blob/master/LICENSE)
+  [![Build](https://github.com/meshjs/mesh/actions/workflows/build.yml/badge.svg)](https://github.com/meshjs/mesh/actions/workflows/build.yml)
+  [![Package](https://github.com/meshjs/mesh/actions/workflows/publish.yml/badge.svg)](https://github.com/meshjs/mesh/actions/workflows/publish.yml)
+
+  [![Twitter/X](https://img.shields.io/badge/Follow%20us-@MeshJS-blue?logo=x&style=for-the-badge)](https://x.com/meshsdk)
+  [![NPM](https://img.shields.io/npm/v/%40meshsdk%2Fcore?style=for-the-badge)](https://www.npmjs.com/package/@meshsdk/core)
+
+  <strong>All-in-one TypeScript SDK for Cardano apps</strong>
+
+</div>
+
 Welcome to the **Sea Battle** by **Brick Towers** — a classic strategic and
 engaging game reimagined with [Midnight](https://midnight.network) blockchain
 [Zero Knowledge](https://en.wikipedia.org/wiki/Zero-knowledge_proof) (ZK) capabilities.
 This project demonstrates how Midnight's ZK features can ensure a fair game without sharing the secret information with a 3rd party.
 
-![Development Process snapshot](./public/docs/framework.jpg)
+![Development Process snapshot](/public/docs/framework.png)
 
 ## Developing strategy
 ### Phase#1: testing using just logic (JEST)
