@@ -16,7 +16,16 @@ This repository features a fully functional decentralized application (DApp) bui
 - Provide a real-world example of how private and complex logic can be executed seamlessly while maintaining user confidentiality, leveraging Midnight's Compact smart contracts, APIs, providers and Lace Wallet.
 
 ## 🕹️ Demo
-An interactive demo that highlights the auction platform's features will be available at. [Edda Labs X/Twitter account](https://x.com/eddalabs_io )
+We’ve prepared a series of demo videos to showcase the key features of the auction platform. In these videos, you'll see how to:
+
+- Connect your wallet and get an overview of the DApp (1:06). [Watch video](https://drive.google.com/file/d/1kZJtYNNzyqbFxfZA2KGaPLAAMKkrcB4V/view?usp=sharing)
+- Mint tBID tokens (0:42). [Watch video](https://drive.google.com/file/d/1c-IITNw1wMWHlVb959mef1sd6JpgMFlt/view?usp=sharing)
+- Create an auction (1:06). [Watch video](https://drive.google.com/file/d/1QXvHvXIw8PkAECvX8-zH79zOx3b6nz7r/view?usp=sharing)
+- Register for an auction (1:02). [Watch video](https://drive.google.com/file/d/1dQVb-5h36ZB2nkL0Hoe12zGLA9skcQY-/view?usp=sharing)
+- Admin approves certificates (0:43). [Watch video](https://drive.google.com/file/d/10fVSQ2WixWvdnYN-rgABugsC-aPoWnnc/view?usp=sharing)
+- Start an auction as an admin (0:59). [Watch video](https://drive.google.com/file/d/1petEj78KlQEx_4YeoJfoIfMrx90ZCNYk/view?usp=sharing)
+- Place a bid (1:11). [Watch video](https://drive.google.com/file/d/1LO-zb_bBHWzkam8xyhsAoxMYmG8pPpGj/view?usp=sharing)
+- Close an auction (1:02). [Watch video](https://drive.google.com/file/d/18Gfa_0x5L-xSc0eHt1VE8Qbi3gE0OLYg/view?usp=sharing)
 
 ## 📜 How to use the platform
 This auction platform offers a decentralized, secure, and transparent bidding experience without relying on traditional web2 authentication, ensuring that your private data remains protected. Instead, it uses the Coin public key for user authentication, along with decentralized identifiers issued by authorized issuers (stored in a local database) for access control and identity verification. The platform is structured to provide distinct functionalities for administrators, regular users, and token minting, while delivering a sleek, intuitive, and engaging user interface. We've put a lot of effort into the details to ensure the experience is not only secure but also easy to use and visually appealing.

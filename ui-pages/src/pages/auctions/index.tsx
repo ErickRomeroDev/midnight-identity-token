@@ -62,14 +62,14 @@ const Auctions = () => {
           Auctions
         </h1>
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center pb-10">
         <div className="relative w-[910px]">
           <Image className="absolute left-[470px] top-[10px]" src="/search.svg" alt="search" height={14} width={14} />
           <Input placeholder="Search" className="pl-5 w-[500px] border-none rounded-[3px] bg-[#3E4858] text-white" />
         </div>
       </div>
 
-      <div className="flex flex-col items-center space-y-16 h-[60%] w-full overflow-y-auto snap-y snap-mandatory pt-16">
+      <div className="flex flex-col items-center space-y-16 h-[410px] w-full overflow-y-auto snap-y snap-mandatory pt-16">
         {chunkedData.map((group, rowIndex) => (
           <div key={rowIndex} className=" snap-center">
             <div className="grid grid-cols-3 gap-x-10">

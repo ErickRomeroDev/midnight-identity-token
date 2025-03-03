@@ -67,7 +67,7 @@ export const Header = () => {
         </Link>
 
         <Link
-          href="/https://github.com/ErickRomeroDev/midnight-identity-token/blob/main/README.md"
+          href="https://github.com/ErickRomeroDev/midnight-identity-token/blob/main/README.md"
           target="_blank"
           rel="noopener noreferrer"
         >
