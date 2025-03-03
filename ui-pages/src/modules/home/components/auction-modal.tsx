@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
@@ -7,11 +9,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EB_Garamond, IBM_Plex_Sans } from 'next/font/google';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ContractState } from '@/packages/midnight-contracts/auction';
+import { ContractState, useProviders } from '@/packages/midnight-contracts/auction';
 import { useAuctionContractSubscription } from '@/modules/midnight-contracts/auction/hooks/use-contract-subscription';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import Countdown from 'react-countdown';
 import { STATE } from '@meshsdk/auction-contract';
@@ -35,25 +36,63 @@ interface AuctionModalProps {
 }
 
 export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: AuctionModalProps) => {
+  const providers = useProviders();
+  const [selectedCertificate, setSelectedCertificate] = useState<string | null>(null);
+
   const formSchema = z.object({
-    name: z.coerce.number(),
+    bidValue: z.coerce.number(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: 0,
+      bidValue: 0,
     },
   });
 
-  const item = index !== undefined ? contracts[index] : undefined;
-  const { contractDeployment, contractState, register } = useAuctionContractSubscription(item);
+  const item = useMemo(() => (index !== undefined ? contracts[index] : undefined), [index, contracts]);
+  // Add a key to force re-mount of the hook when index changes
+  const key = item?.address || index;
+  const { contractDeployment, contractState, register, set_myId1, set_myId2, set_myId3, set_myId4, bid } =
+    useAuctionContractSubscription(item, key);
+  console.log('contractState', contractState);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     try {
-      register();
+      await register();
     } catch (e: any) {
-      toast.error(e);
+      console.log('error', e.message);
+      toast.error(e.message);
+    }
+  };
+
+  useEffect(() => {
+    if (contractState?.userAction?.action === 'registering') {
+      toast.info('Placing your bid...');
+    }
+    if (contractState?.userAction?.action === 'registering-done') {
+      toast.dismiss(); // Remove previous messages
+      toast.info('Your bid was placed.');
+    }
+  }, [contractState?.userAction.action]);
+
+  const handleSelectChange = (value: string) => {
+    setSelectedCertificate(value);
+    console.log('Selected certificate:', value);
+    toast.success(`Certificate ${value} selected`);
+
+    // Map selected value to its respective function
+    const functionMap: Record<string, () => void> = {
+      myId1: set_myId1,
+      myId2: set_myId2,
+      myId3: set_myId3,
+      myId4: set_myId4,
+    };
+
+    // Execute the corresponding function if the value exists in the map
+    if (functionMap[value]) {
+      functionMap[value]();
+      console.log(`Executed function for ${value}`);
     }
   };
 
@@ -78,9 +117,31 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
+      await bid(values.bidValue);
       form.reset();
-    } catch {}
+    } catch {
+      toast.error('something went wrong');
+    }
   };
+
+  useEffect(() => {
+    if (contractState?.userAction?.action === 'bidding') {
+      toast.info('Placing your bid');
+    }
+    if (contractState?.userAction?.action === 'bidding-done') {
+      toast.dismiss(); // Remove previous messages
+      toast.info('Your bid was placed');
+    }
+  }, [contractState?.userAction.action]);
+
+  useEffect(() => {
+    if (providers?.flowMessage) {
+      toast.info(providers.flowMessage, {
+        id: 'flowMessageToast', // Use a fixed ID to avoid duplicates
+        duration: Infinity,
+      });
+    }
+  }, [providers?.flowMessage]);
 
   return (
     <>
@@ -107,7 +168,7 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
                       />
                     )}
                   </div>
-                  <div className="space-y-4 px-6 pb-10 pt-4 text-white">
+                  <div className="space-y-6 px-6 pb-10 pt-4 text-white">
                     <div className="flex justify-between font-[family-name:var(--font-eb-garamond)] text-base">
                       <div>
                         <h2 className="text-[18px]">Ends In:</h2>
@@ -127,38 +188,40 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-x-2 text-[14px] leading-snug">
-                      <div>Contract:</div>
-                      <div className="flex gap-x-2">
-                        <div className="">
-                          {contractDeployment?.address &&
-                            `${contractDeployment.address.slice(0, 15)}...${contractDeployment.address.slice(-15)}`}
+                    <div className="space-y-2">
+                      <div className="flex gap-x-2 text-[14px] leading-snug">
+                        <div>Contract:</div>
+                        <div className="flex gap-x-2">
+                          <div className="">
+                            {contractDeployment?.address &&
+                              `${contractDeployment.address.slice(0, 15)}...${contractDeployment.address.slice(-15)}`}
+                          </div>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Image
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    contractDeployment?.address && navigator.clipboard.writeText(contractDeployment.address);
+                                    toast.success('Contract address copied!');
+                                  }}
+                                  src="/copy-white.svg"
+                                  alt="copy"
+                                  width={12}
+                                  height={12}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent side="bottom">
+                                <p>Copy contract</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Image
-                                className="cursor-pointer"
-                                onClick={() => {
-                                  contractDeployment?.address && navigator.clipboard.writeText(contractDeployment.address);
-                                  toast.success('Contract address copied!');
-                                }}
-                                src="/copy-white.svg"
-                                alt="copy"
-                                width={12}
-                                height={12}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent side="bottom">
-                              <p>Copy contract</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       </div>
-                    </div>
-                    <div className="flex gap-x-2 text-[14px] leading-snug">
-                      <div>Estimate:</div>
-                      <div>{contractState?.info.description}</div>
+                      <div className="flex gap-x-2 text-[14px] leading-snug">
+                        <div>Estimate:</div>
+                        <div>{contractState?.info.description}</div>
+                      </div>
                     </div>
                   </div>
 
@@ -168,7 +231,7 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
                         <div className="flex items-center justify-between px-6 pb-10">
                           <FormField
                             control={form.control}
-                            name="name"
+                            name="bidValue"
                             render={({ field }) => (
                               <FormItem className="">
                                 <FormLabel className=""></FormLabel>
@@ -192,7 +255,21 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
                     </Form>
                   )}
                   {contractState?.state === STATE.open && (
-                    <div className="flex w-full justify-center items-center pb-10">
+                    <div className="flex w-full justify-between items-center px-6 pb-10">
+                      <Select onValueChange={handleSelectChange}>
+                        <SelectTrigger className="w-[180px] border-none bg-[#3E4858] rounded-[4px] text-white">
+                          <SelectValue placeholder="Select a certificate" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>My Certificates</SelectLabel>
+                            <SelectItem value="myId1">My ID 1</SelectItem>
+                            <SelectItem value="myId2">My ID 2</SelectItem>
+                            <SelectItem value="myId3">My ID 3</SelectItem>
+                            <SelectItem value="myId4">My ID 4</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                       <Button
                         onClick={handleRegister}
                         className="w-[140px] rounded-[4px] bg-gradient-to-r from-[#D26608] to-[#D28C13] font-normal transition-all hover:from-[#E07318] hover:to-[#E29E35]"
