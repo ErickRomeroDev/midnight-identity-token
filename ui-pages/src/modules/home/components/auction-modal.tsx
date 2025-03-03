@@ -38,6 +38,8 @@ interface AuctionModalProps {
 export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: AuctionModalProps) => {
   const providers = useProviders();
   const [selectedCertificate, setSelectedCertificate] = useState<string | null>(null);
+  const [registerDisabled, setRegisterDisabled] = useState(false);
+  const [bidDisabled, setBidDisabled] = useState(false);
 
   const formSchema = z.object({
     bidValue: z.coerce.number(),
@@ -59,20 +61,23 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
 
   const handleRegister = async () => {
     try {
+      setRegisterDisabled(true);
       await register();
+      setRegisterDisabled(false);
     } catch (e: any) {
       console.log('error', e.message);
       toast.error(e.message);
+      setRegisterDisabled(false);
     }
   };
 
   useEffect(() => {
     if (contractState?.userAction?.action === 'registering') {
-      toast.info('Placing your bid...');
+      toast.info('Registering your certificate...');
     }
     if (contractState?.userAction?.action === 'registering-done') {
       toast.dismiss(); // Remove previous messages
-      toast.info('Your bid was placed.');
+      toast.info('Your certificate was registered.');
     }
   }, [contractState?.userAction.action]);
 
@@ -117,10 +122,13 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
+      setBidDisabled(true);
       await bid(values.bidValue);
+      setBidDisabled(false);
       form.reset();
     } catch {
       toast.error('something went wrong');
+      setBidDisabled(false);
     }
   };
 
@@ -245,6 +253,7 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
                           />
 
                           <Button
+                          disabled={bidDisabled}
                             type="submit"
                             className="w-[140px] rounded-[4px] bg-gradient-to-r from-[#D26608] to-[#D28C13] font-normal transition-all hover:from-[#E07318] hover:to-[#E29E35]"
                           >
@@ -271,6 +280,7 @@ export const AuctionModal = ({ contracts, openDialog, setOpenDialog, index }: Au
                         </SelectContent>
                       </Select>
                       <Button
+                        disabled={registerDisabled}
                         onClick={handleRegister}
                         className="w-[140px] rounded-[4px] bg-gradient-to-r from-[#D26608] to-[#D28C13] font-normal transition-all hover:from-[#E07318] hover:to-[#E29E35]"
                       >
