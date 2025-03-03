@@ -1,6 +1,6 @@
 # Edda Labs - Auction Platform
 <div align="center">
-  <img src="https://res.cloudinary.com/dsj3o4xyn/image/upload/v1741022494/Cover_pxmy2c.jpg" alt="Development Process snapshot" width="1100" height="600">
+  <img src="https://res.cloudinary.com/dsj3o4xyn/image/upload/v1741022494/Cover_pxmy2c.jpg" alt="Development Process snapshot" width="900" height="500">
 </div>
 
 
