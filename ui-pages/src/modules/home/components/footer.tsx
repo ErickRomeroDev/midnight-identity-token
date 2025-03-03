@@ -19,7 +19,7 @@ export const Footer = () => {
           <div className="flex gap-x-2 items-center h-10">
             <span>, powered by</span>
             <Link href="https://meshjs.dev/">
-              <Image src="/mesh-sdk-logo.svg" alt="Mesh.js" width={95} height={95} />
+              <Image src="/mesh-sdk-logo.png" alt="Mesh.js" width={95} height={95} />
             </Link>
           </div>
             <span>.</span>
