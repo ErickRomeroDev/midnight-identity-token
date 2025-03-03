@@ -1,5 +1,6 @@
-import { AuctionSmartContractCard } from '@/modules/home/components/auction-smartContract-card';
-import { AuctionSmartContractModal } from '@/modules/home/components/auction-smartContract-modal';
+import { AuctionCard } from '@/modules/home/components/auction-card';
+import { AuctionModal } from '@/modules/home/components/auction-modal';
+import { Footer } from '@/modules/home/components/footer';
 import { ContractState, useDeployedContracts } from '@/packages/midnight-contracts/auction';
 import { api } from '@/utils/api';
 import { useCallback, useEffect, useState } from 'react';
@@ -53,28 +54,39 @@ const Auctions = () => {
 
   return (
     <div className="relative flex flex-col h-[calc(100vh-70px)] justify-center mt-[70px]">
-      <AuctionSmartContractModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} contracts={auctionContractDeployments} />
-      <div className="absolute bottom-0 -z-10 h-[45%] w-full bg-[#3E4858]" />
+      <AuctionModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} contracts={auctionContractDeployments} />
+      <div className="flex justify-center absolute bottom-0 -z-10 h-[45%]  w-full bg-[#3E4858]">
+        <h1 className="absolute top-[-55px] pl-12 w-full max-w-[2000px] text-white/80 text-5xl font-[family-name:var(--font-eb-garamond)]">
+          Auctions
+        </h1>
+      </div>
       <div className="border">Search bar</div>
 
-      <div className="flex flex-col items-center space-y-16 h-[60%] w-full overflow-y-auto snap-y snap-mandatory border border-pink-400 pt-16">
+      <div className="flex flex-col items-center space-y-16 h-[60%] w-full overflow-y-auto snap-y snap-mandatory pt-16">
         {chunkedData.map((group, rowIndex) => (
           <div key={rowIndex} className=" snap-center">
             <div className="grid grid-cols-3 gap-x-10">
-              {group.map((item, colIndex) => (
-                <AuctionSmartContractCard
-                  key={rowIndex * colIndex + colIndex}                  
-                  contract={item}
-                  index={rowIndex * colIndex + colIndex}
-                  setIndex={setIndex}
-                  setOpenDialog={setOpenDialog}
-                />
-              ))}
+              {group.map((item, colIndex) => {
+                console.log('rowIndex', rowIndex);
+                console.log('ColIndex', colIndex);
+                return (
+                  <AuctionCard
+                    key={rowIndex * 3 + colIndex}
+                    contract={item}
+                    index={rowIndex * 3 + colIndex}
+                    setIndex={setIndex}
+                    setOpenDialog={setOpenDialog}
+                  />
+                );
+              })}
             </div>
           </div>
         ))}
 
         <div className="h-20" />
+      </div>
+      <div className="absolute bottom-0 w-full">
+        <Footer />
       </div>
     </div>
   );

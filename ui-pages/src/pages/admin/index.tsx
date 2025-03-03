@@ -1,24 +1,22 @@
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from 'sonner';
 import { useDeployedContracts, useProviders } from '@/packages/midnight-contracts/auction';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useAuctionContractsSubscriptions } from '@/modules/midnight-contracts/auction/hooks/use-contracts-subscriptions';
 import { ContractPage } from '@/modules/home/components/admin-contracts';
 import { api } from '@/utils/api';
+import { NewAuction } from '@/modules/home/components/new-auction';
+import { ManageAuctions } from '@/modules/home/components/manage-auctions';
+import { Footer } from '@/modules/home/components/footer';
+import { PendingCertificates } from '@/modules/home/components/pending-certificates';
+import { ApprovedCertificates } from '@/modules/home/components/approved-certificates';
 
 const Admin = () => {
-  const deploy = useDeployedContracts();
   const { auctionContractDeployments, auctionContractDeployments_refresh } = useAuctionContractsSubscriptions();
   const providers = useProviders();
   const [deploymentStatus, setDeploymentStatus] = useState<'deploying' | 'deploying-done' | 'deploying-error' | undefined>(
     undefined,
   );
-  const { mutate } = api.postTable.postSmartContract.useMutation();
 
   useEffect(() => {
     if (deploymentStatus === 'deploying') {
@@ -39,138 +37,68 @@ const Admin = () => {
     }
   }, [providers?.flowMessage]);
 
-  const formSchema = z.object({
-    title: z.string(),
-    description: z.string(),
-    minBid: z.coerce.number(),
-    endDate: z.string(),
-    image: z.string(),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      minBid: 0,
-      endDate: '',
-      image: '',
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      if (deploy) {
-        setDeploymentStatus('deploying');
-        const contract = await deploy.deployAndAddContract(
-          'recent',
-          values.title,
-          values.description,
-          values.minBid,
-          values.endDate,
-          values.image,
-        );
-        setDeploymentStatus('deploying-done');
-        if (contract.address) {
-          mutate({ smartContract: contract.address });
-        }
-        console.log('smart contract Address', contract.address);
-      }
-      form.reset();
-      auctionContractDeployments_refresh();
-    } catch {
-      setDeploymentStatus('deploying-error');
-    }
-  };
-
   return (
-    <div className="pt-[70px] text-white">
-      <h1>Admin Page</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col items-center justify-between px-6 pb-10">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel className=""></FormLabel>
-                  <FormControl>
-                    <Input className="w-[200px] placeholder:text-center" placeholder="title" {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel className=""></FormLabel>
-                  <FormControl>
-                    <Input className="w-[200px] placeholder:text-center" placeholder="description" {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="minBid"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel className=""></FormLabel>
-                  <FormControl>
-                    <Input className="w-[200px] placeholder:text-center" placeholder="minBid" {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel className=""></FormLabel>
-                  <FormControl>
-                    <Input className="w-[200px] placeholder:text-center" placeholder="end date" {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel className=""></FormLabel>
-                  <FormControl>
-                    <Input className="w-[200px] placeholder:text-center" placeholder="image" {...field} />
-                  </FormControl>
-                  <FormDescription></FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              className="w-[140px] rounded-[4px] bg-gradient-to-r from-[#D26608] to-[#D28C13] font-normal transition-all hover:from-[#E07318] hover:to-[#E29E35]"
-            >
-              Create Auction
-            </Button>
-          </div>
-        </form>
-      </Form>
-      {auctionContractDeployments.map((contract, id) => (
-        <ContractPage key={id} contract={contract} />
-      ))}
+    <div className="flex flex-col items-center justify-between gap-y-20 min-h-screen pt-[70px] text-white">
+      <h1 className="w-[600px] pt-12 text-white/80 text-5xl font-[family-name:var(--font-eb-garamond)]">
+          Admin
+        </h1>
+      <div className="w-[600px]">
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem className="border-b border-[#707070]" value="item-1">
+            <AccordionTrigger>
+              <div className="pl-5 font-[family-name:var(--font-eb-garamond)] text-white/70 text-[20px]">New Auction</div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="border border-[#707070] rounded-[3px] py-8">
+                <NewAuction
+                  auctionContractDeployments={auctionContractDeployments}
+                  auctionContractDeployments_refresh={auctionContractDeployments_refresh}
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem className="border-b border-[#707070]" value="item-2">
+            <AccordionTrigger>
+              <div className="pl-5 font-[family-name:var(--font-eb-garamond)] text-white/70 text-[20px]">Manage Auctions</div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="border border-[#707070] rounded-[3px] px-4 py-5">
+                <ManageAuctions
+                  auctionContractDeployments={auctionContractDeployments}
+                  auctionContractDeployments_refresh={auctionContractDeployments_refresh}
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem className="border-b border-[#707070]" value="item-3">
+            <AccordionTrigger>
+              <div className="pl-5 font-[family-name:var(--font-eb-garamond)] text-white/70 text-[20px]">
+                Pending Certificates
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="border border-[#707070] rounded-[3px] px-4 py-5">
+                <PendingCertificates auctionContractDeployments={auctionContractDeployments} />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem className="border-b border-[#707070]" value="item-4">
+            <AccordionTrigger>
+              <div className="pl-5 font-[family-name:var(--font-eb-garamond)] text-white/70 text-[20px]">
+                Approved Certificates
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="border border-[#707070] rounded-[3px] px-4 py-8">
+                <ApprovedCertificates auctionContractDeployments={auctionContractDeployments}/>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+      <div className="">
+        <Footer />
+      </div>
     </div>
   );
 };

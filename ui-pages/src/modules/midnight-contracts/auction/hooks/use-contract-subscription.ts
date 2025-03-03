@@ -11,7 +11,7 @@ import { toHex } from '@midnight-ntwrk/midnight-js-utils';
 import { encodeCoinPublicKey } from '@midnight-ntwrk/compact-runtime';
 import { useAssets } from '@/packages/midnight-react';
 
-export const useAuctionContractSubscription = (contractStates?: ContractState) => {
+export const useAuctionContractSubscription = (contractStates?: ContractState, key?: string | number) => {
   const [contractDeployment, setContractDeployment] = useState<ContractDeployment>();
   const [deployedContractAPI, setDeployedContractAPI] = useState<DeployedAPI>();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -20,6 +20,15 @@ export const useAuctionContractSubscription = (contractStates?: ContractState) =
   const { coinPublicKey } = useAssets();
   const providersAuction = useProvidersAuction();
   const localStorage = useLocalState();
+
+  /** ✅ Force reset state when key (modal) changes */
+  useEffect(() => {
+    setContractDeployment(undefined);
+    setDeployedContractAPI(undefined);
+    setContractState(undefined);
+    setErrorMessage(undefined);
+    setIsLoading(!!contractStates?.observable);
+  }, [key]); // 👈 Resets state when a new contract is selected (modal reopens)
 
   useEffect(() => {
     if (!contractStates?.observable) {
@@ -59,9 +68,13 @@ export const useAuctionContractSubscription = (contractStates?: ContractState) =
     }
   }, [deployedContractAPI]);
 
-  const register = () => {
+  const register = async () => {
     if (deployedContractAPI) {
-      deployedContractAPI.register();
+      try {
+        await deployedContractAPI.register();
+      } catch (e) {
+        throw e;
+      }
     }
   };
 
@@ -89,28 +102,32 @@ export const useAuctionContractSubscription = (contractStates?: ContractState) =
     }
   }, [contractState, deployedContractAPI]);
 
-  const approve_certificates = (approvedHexCertificates: string[]) => {
-    if (deployedContractAPI && contractState) {
-      const maybeKeys: Maybe<Uint8Array>[] = [];
-      const MAX_KEYS = 10;
-      for (let i = 0; i < contractState.registered.length && maybeKeys.length < MAX_KEYS; i++) {
-        const cert = contractState.registered[i];
-        if (cert.is_some) {
-          // Convert the stored certificate to a hex string.
-          const certHex = toHex(cert.value);
-          // Only include this certificate if its hex representation is in our approved list.
-          if (approvedHexCertificates.includes(certHex)) {
-            maybeKeys.push(cert);
+  const approve_certificates = async (approvedHexCertificates: string[]) => {
+    try {
+      if (deployedContractAPI && contractState) {
+        const maybeKeys: Maybe<Uint8Array>[] = [];
+        const MAX_KEYS = 10;
+        for (let i = 0; i < contractState.registered.length && maybeKeys.length < MAX_KEYS; i++) {
+          const cert = contractState.registered[i];
+          if (cert.is_some) {
+            // Convert the stored certificate to a hex string.
+            const certHex = toHex(cert.value);
+            // Only include this certificate if its hex representation is in our approved list.
+            if (approvedHexCertificates.includes(certHex)) {
+              maybeKeys.push(cert);
+            }
           }
         }
+        while (maybeKeys.length < 10) {
+          maybeKeys.push({
+            is_some: false,
+            value: new Uint8Array(32),
+          });
+        }
+        await deployedContractAPI.approve_certificates(maybeKeys);
       }
-      while (maybeKeys.length < 10) {
-        maybeKeys.push({
-          is_some: false,
-          value: new Uint8Array(32),
-        });
-      }
-      deployedContractAPI.approve_certificates(maybeKeys);
+    } catch (e) {
+      throw e;
     }
   };
 
@@ -120,9 +137,13 @@ export const useAuctionContractSubscription = (contractStates?: ContractState) =
     }
   };
 
-  const bid = (value: number) => {
-    if (deployedContractAPI) {
-      deployedContractAPI.make_bid(value);
+  const bid = async (value: number) => {
+    try {
+      if (deployedContractAPI) {
+        await deployedContractAPI.make_bid(value);
+      }
+    } catch (e) {
+      throw e;
     }
   };
 

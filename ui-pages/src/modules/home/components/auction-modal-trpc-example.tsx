@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { api } from '@/utils/api';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EB_Garamond, IBM_Plex_Sans } from 'next/font/google';
+import Image from 'next/image';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ContractState } from '@/packages/midnight-contracts/auction';
-import { useAuctionContractSubscription } from '@/modules/midnight-contracts/auction/hooks/use-contract-subscription';
 
 export const ebGaramond = EB_Garamond({
   variable: '--font-eb-garamond',
@@ -20,14 +20,14 @@ const ibmPlexSans = IBM_Plex_Sans({
   weight: ['100', '200', '300', '400', '500', '600', '700'],
 });
 
-interface AuctionModalProps {
-  contracts: ContractState[];
+interface AuctionModalTrpcExampleProps {
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
-  index: number | undefined;
+  index?: number;
 }
 
-export const AuctionSmartContractModal = ({ contracts, openDialog, setOpenDialog, index }: AuctionModalProps) => {  
+export const AuctionModalTrpcExample = ({ openDialog, setOpenDialog, index }: AuctionModalTrpcExampleProps) => {
+  const { data, isLoading } = api.getTable.getMany.useQuery();
 
   const formSchema = z.object({
     name: z.coerce.number(),
@@ -40,8 +40,11 @@ export const AuctionSmartContractModal = ({ contracts, openDialog, setOpenDialog
     },
   });
 
-  const item = index !== undefined ? contracts[index] : undefined;
-  const { contractDeployment } = useAuctionContractSubscription(item);
+  if (isLoading || !data) {
+    return <div>Loading...</div>;
+  }
+
+  const item = data[index!];
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -63,17 +66,17 @@ export const AuctionSmartContractModal = ({ contracts, openDialog, setOpenDialog
                   <div className="relative h-[270px]">
                     <div className="absolute z-10 h-full w-full bg-[#0E1B2E]/40" />
                     <h1 className="absolute bottom-4 left-6 z-20 font-[family-name:var(--font-eb-garamond)] text-[26px] text-white">
-                      {contractDeployment?.address}
+                      {item.title}
                     </h1>
-                    {/* <Image
+                    <Image
                       className="pointer-events-none h-full w-full rounded-t-[5px] object-cover"
                       src={item.imageUrl}
                       alt="sample"
                       width={300}
                       height={300}
-                    /> */}
+                    />
                   </div>
-                  {/* <div className="space-y-4 px-6 pb-10 pt-4 text-white">
+                  <div className="space-y-4 px-6 pb-10 pt-4 text-white">
                     <div className="flex justify-between font-[family-name:var(--font-eb-garamond)] text-base">
                       <div>
                         <h2 className="text-[18px]">Ends In:</h2>
@@ -86,7 +89,7 @@ export const AuctionSmartContractModal = ({ contracts, openDialog, setOpenDialog
                     </div>
                     <div className="text-[14px] leading-snug">Description: {item.description}</div>
                     <div className="text-[14px] leading-snug">Estimate: {item.estimate}</div>
-                  </div> */}
+                  </div>
 
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
