@@ -1,8 +1,10 @@
+import { Input } from '@/components/ui/input';
 import { AuctionCard } from '@/modules/home/components/auction-card';
 import { AuctionModal } from '@/modules/home/components/auction-modal';
 import { Footer } from '@/modules/home/components/footer';
 import { ContractState, useDeployedContracts } from '@/packages/midnight-contracts/auction';
 import { api } from '@/utils/api';
+import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
 const chunkArray = <T,>(arr: T[], size: number): T[][] => {
@@ -55,12 +57,17 @@ const Auctions = () => {
   return (
     <div className="relative flex flex-col h-[calc(100vh-70px)] justify-center mt-[70px]">
       <AuctionModal openDialog={openDialog} setOpenDialog={setOpenDialog} index={index} contracts={auctionContractDeployments} />
-      <div className="flex justify-center absolute bottom-0 -z-10 h-[45%]  w-full bg-[#3E4858]">
+      <div className="flex justify-center absolute bottom-0 -z-10 h-[50%]  w-full bg-[#3E4858]">
         <h1 className="absolute top-[-55px] pl-12 w-full max-w-[2000px] text-white/80 text-5xl font-[family-name:var(--font-eb-garamond)]">
           Auctions
         </h1>
       </div>
-      <div className="border">Search bar</div>
+      <div className="flex justify-center">
+        <div className="relative w-[910px]">
+          <Image className="absolute left-[470px] top-[10px]" src="/search.svg" alt="search" height={14} width={14} />
+          <Input placeholder="Search" className="pl-5 w-[500px] border-none rounded-[3px] bg-[#3E4858] text-white" />
+        </div>
+      </div>
 
       <div className="flex flex-col items-center space-y-16 h-[60%] w-full overflow-y-auto snap-y snap-mandatory pt-16">
         {chunkedData.map((group, rowIndex) => (

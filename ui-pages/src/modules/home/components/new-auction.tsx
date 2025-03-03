@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { api } from '@/utils/api';
 import { Subscription } from 'rxjs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ManageAuctionsProps {
   auctionContractDeployments: ContractState[];
@@ -34,11 +35,11 @@ export const NewAuction = ({ auctionContractDeployments, auctionContractDeployme
   }, [deploymentStatus]);
 
   const formSchema = z.object({
-    title: z.string(),
+    title: z.string().min(3, 'Title must be at least 3 characters long').max(30, 'Title cannot exceed 30 characters'),
     description: z.string(),
     minBid: z.coerce.number(),
-    endDate: z.string(),
-    image: z.string(),
+    endDate: z.string().regex(/^[A-Z][a-z]+ \d{1,2}, \d{4}$/, 'Date must be in the format: March 13, 2025'),
+    image: z.string().min(1, 'You must select an image'),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -90,8 +91,8 @@ export const NewAuction = ({ auctionContractDeployments, auctionContractDeployme
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:pl-3"
-                    placeholder="title"
+                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:text-white/40"
+                    placeholder="e.g., Rustic Country Estate"
                     {...field}
                   />
                 </FormControl>
@@ -110,8 +111,8 @@ export const NewAuction = ({ auctionContractDeployments, auctionContractDeployme
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:pl-3"
-                    placeholder="description"
+                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:text-white/40"
+                    placeholder="e.g., 300 tBID - 1,000 tBID"
                     {...field}
                   />
                 </FormControl>
@@ -130,8 +131,8 @@ export const NewAuction = ({ auctionContractDeployments, auctionContractDeployme
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:pl-3"
-                    placeholder="minBid"
+                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:text-white/40"
+                    placeholder="Minimum bid required"
                     {...field}
                   />
                 </FormControl>
@@ -150,8 +151,8 @@ export const NewAuction = ({ auctionContractDeployments, auctionContractDeployme
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:pl-3"
-                    placeholder="end date"
+                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:text-white/40"
+                    placeholder="e.g., March 13, 2025"
                     {...field}
                   />
                 </FormControl>
@@ -169,14 +170,21 @@ export const NewAuction = ({ auctionContractDeployments, auctionContractDeployme
                   <div className="pl-2 text-white/70 text-[12px]">Cover Image</div>
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    className="w-[250px] border-none rounded-[3px] bg-[#3E4858] placeholder:pl-3"
-                    placeholder="image"
-                    {...field}
-                  />
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="w-[250px] border-none rounded-[3px] bg-[#3E4858] text-white/70">
+                      <SelectValue placeholder="Select an image" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="/sample-1.jpg">Modern Nature-Integrated House</SelectItem>
+                      <SelectItem value="/sample-2.jpg">Contemporary Angular Home</SelectItem>
+                      <SelectItem value="/sample-3.jpg">Minimalist Poolside Villa</SelectItem>
+                      <SelectItem value="/sample-4.jpg">Cozy Mountain Lodge</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormDescription></FormDescription>
                 <FormMessage />
+                <p className="text-white/60 text-[10px] mt-1">*All images are royalty-free and sourced from Unsplash.</p>
               </FormItem>
             )}
           />

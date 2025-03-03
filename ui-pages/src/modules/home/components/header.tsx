@@ -1,12 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { CardanoWallet } from '@/packages/midnight-react';
+import { usePathname } from 'next/navigation';
 import { useSubscriptions } from '@/modules/midnight-contracts/token/hooks/use-subscriptions';
 import { toast } from 'sonner';
 import { useProviders } from '@/packages/midnight-contracts/token';
 import { useEffect } from 'react';
 
 export const Header = () => {
+  const pathname = usePathname();
   const providers = useProviders();
   const { deployedAPI, derivedState } = useSubscriptions();
 
@@ -49,10 +51,11 @@ export const Header = () => {
       <nav className="relative h-full flex items-center gap-x-10 text-[18px] text-[#0E1B2E]">
         <div className="absolute top-[22px] right-[150px] rounded-full h-[25px] w-[1.2px] bg-[#0E1B2E]" />
         <Link href="/">
-          <button className="hover:text-[#D28C13]">Home</button>
+          <button className={`${pathname === '/' ? 'text-[#D28C13]' : 'hover:text-[#D28C13]'}`}>Home</button>
         </Link>
+
         <Link href="/auctions">
-          <button className="hover:text-[#D28C13]">Auctions</button>
+          <button className={`${pathname === '/auctions' ? 'text-[#D28C13]' : 'hover:text-[#D28C13]'}`}>Auctions</button>
         </Link>
 
         <button onClick={mint} className="hover:text-[#D28C13]">
@@ -60,10 +63,14 @@ export const Header = () => {
         </button>
 
         <Link href="/admin">
-          <button className="hover:text-[#D28C13]">Admin</button>
+          <button className={`${pathname === '/admin' ? 'text-[#D28C13]' : 'hover:text-[#D28C13]'}`}>Admin</button>
         </Link>
 
-        <Link href="/">
+        <Link
+          href="/https://github.com/ErickRomeroDev/midnight-identity-token/blob/main/README.md"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <button className="hover:text-[#D28C13]">Documentation</button>
         </Link>
         <CardanoWallet />

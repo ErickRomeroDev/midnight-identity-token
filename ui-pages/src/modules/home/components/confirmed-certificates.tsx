@@ -19,7 +19,7 @@ export const ConfirmedCertificates = ({ contract }: ConfirmedCertificatesProps) 
   }, [list_confirmed]);
 
   return (
-    <div className='border border-[#707070] rounded-[3px] p-3'>
+    <div className='border border-[#707070] rounded-[3px] p-3 space-y-3'>
       <div className="flex gap-x-2">
           <h1 className="text-white/50">Contract Address: </h1>
           <div className="flex gap-x-2">
@@ -50,8 +50,7 @@ export const ConfirmedCertificates = ({ contract }: ConfirmedCertificatesProps) 
           </div>
         </div>
       <ul className="">
-        {list_confirmed_ && list_confirmed_.map((item) => (<div className='flex flex-col gap-y-2'>{item}</div>))}
-        {!list_confirmed_ && (<div className='py-4 text-white/50 text-center'>No approved certificates to show.</div>)}
+        {list_confirmed_ && list_confirmed_.map((item) => (<div className='flex flex-col py-1 text-white/80'>{item}</div>))}
         </ul>
     </div>
   );
