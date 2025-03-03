@@ -1,4 +1,8 @@
 # Edda Labs - Auction Platform
+<div align="center">
+  <img src="https://res.cloudinary.com/dsj3o4xyn/image/upload/v1741022494/Cover_pxmy2c.jpg" alt="Development Process snapshot" width="900" height="500">
+</div>
+
 
 ## 📱 Overview
 This repository features a fully functional decentralized application (DApp) built with Midnight technology that leverages zero-knowledge proofs to securely authenticate users bidding on house sales. It integrates smart contracts written in Midnight’s Compact language to generate proofs verifying aspects of a digital identity, and it boasts a sleek, modern, and intuitive user interface designed to provide an exceptional user experience. The application connects seamlessly with Lace Wallet, uses mocked off-chain data for demonstration purposes, and includes sections for minting the token necessary to perform bids, an administration section for administering bidding rooms, and a user section where users place bids and authenticate themselves.
@@ -29,7 +33,6 @@ This auction platform offers a decentralized, secure, and transparent bidding ex
 - In this version of the platform, we are using mock data that includes four different certificates—some that meet all prerequisites for testing and others that do not. Despite using simulated data, we have designed the architecture to support integration with various issuers and decentralized identity frameworks. This is detailed in the arquitecture section, which lays the foundation for future work streams. 
 - Once a bidding room is closed to new registrations, continue to place bids during the auction.
 - Place bids that must exceed the previous highest bid, with the contract refunding the prior highest bid to its owner.
-- Upon winning an auction, receive an NFT as proof of success.
 
 ### Minting
 - Mint the token necessary for placing bids.
@@ -86,7 +89,7 @@ This auction platform offers a decentralized, secure, and transparent bidding ex
     yarn db:init
     yarn ngrok:init
 ```
-- Set Lace wallet Network as Undeployed. You should receive 10000 tDust and 100 tBid tokens.
+- Set your Lace wallet network to "Undeployed" and ensure it's fully synced. You should then see a balance of 10,000 tDust and 100 tBid tokens.
 - Go to https://localhost:3000/ using Chrome browser and start setting up bid rooms and making bids 🤓
 
 ## 🏯 Tech Stack 
@@ -156,7 +159,7 @@ The auction platform is powered by two distinct smart contracts: one mints the t
 
 ## 🌟 Innovation - Pushing the boundaries
 - **`Mesh SDK for Midnight:`** 
-A groundbreaking development is the creation of the Mesh SDK, which is designed to simplify the development process for business developers. For this project, we have delivered a wallet widget that allows developers to plug and play a complete, working wallet component directly into their applications. The SDK will be deployed in four distinct phases, explained above in the Development Process section, enabling developers to engage at various levels of abstraction according to their expertise and needs. Notably, phase #4 of the SDK for the auction & token contract provides ready-to-use providers and hooks. This means that developers do not need to grasp the underlying intricacies of Midnight technology—understanding the business logic and having basic React knowledge is sufficient. This phased approach balances flexibility with readiness, fostering a more accessible and robust development ecosystem on the Midnight platform.
+A groundbreaking development is the creation of the Mesh SDK - Midnight package, which is designed to simplify the development process for business developers. For this project, we have delivered a wallet widget that allows developers to plug and play a complete, working wallet component directly into their applications. The SDK will be deployed in four distinct phases, explained above in the Development Process section, enabling developers to engage at various levels of abstraction according to their expertise and needs. Notably, phase #4 of the SDK for the auction & token contract provides ready-to-use providers and hooks. This means that developers do not need to grasp the underlying intricacies of Midnight technology—understanding the business logic and having basic React knowledge is sufficient. This phased approach balances flexibility with readiness, fostering a more accessible and robust development ecosystem on the Midnight platform.
 
 - **`Developer-Friendly Repository for Education and Rapid Development:`** 
 We understand the challenges new developers face when setting up, testing, and running decentralized applications. To address these pain points, this repository is built with a strong focus on education and rapid local development. Developers can quickly get the application running on their local machines without the need to host or sign up with any cloud provider. With NGROK integration, sharing the application with friends and other developers is seamless, eliminating traditional barriers and accelerating the learning process. No more pain testing Midnight functionalities—just plug in, start learning, and iterate.
@@ -287,7 +290,7 @@ The Test Framework module rigorously validates the functionality of both the Tok
 A fully functional wallet widget that enables developers to quickly integrate a complete, ready-to-use wallet component into their applications without extensive setup.
 
 - **`Pre-Built Hooks and Providers:`**
-In phase#3 of the SDK, ready-to-use hooks and providers for the auction contract are included. Developers can focus on business logic and user experience without needing in-depth knowledge of the underlying Midnight technology.
+In phase#3 of the SDK, ready-to-use hooks and providers for the auction & token contract are included. Developers can focus on business logic and user experience without needing in-depth knowledge of the underlying Midnight technology.
 
 - **`Smart Contract Integration Hooks:`**
 In phase#4, the SDK provides hooks for integrating and executing smart contract actions within the UI. These hooks automatically subscribe to observables, ensuring that any state changes in the contract—such as transaction results or updated values—are reflected in real time in the UI.
@@ -365,7 +368,7 @@ The overall interface is designed with clarity and simplicity in mind, providing
 
 ## 🕜 Upcoming Features
 
-- **`Notion of Timing within Compact:`**
+- **`Notion of Time within Compact:`**
 A robust timing mechanism that will allow smart contracts to enforce deadlines, manage auction durations, and control time-based conditions within the Compact language. This feature is planned for future implementation as support for timing logic is introduced.
 
 - **`Cross-Contract Communication:`**
